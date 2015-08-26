@@ -19,7 +19,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_marginBottom="15dp"
                 android:background="@drawable/custom_btn_green"
-                android:text="Agree &amp; Pay" />
+                android:text="Agree &amp; Pay1" />
 
             <TableLayout
                 android:id="@+id/tbl_tipcoupon"

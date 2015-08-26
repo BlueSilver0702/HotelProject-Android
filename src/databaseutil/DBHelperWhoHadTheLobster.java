@@ -3,7 +3,6 @@ package databaseutil;
 
 import java.util.ArrayList;
 
-import android.R.string;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -16,6 +15,7 @@ public class DBHelperWhoHadTheLobster extends SQLiteOpenHelper {
 	   public static final String DATABASE_NAME = "MyDBName.db";
 	   public static final String LETS_GO_DUTCH_TABLE_NAME = "LetsGoDutch";
 	   public static final String WHO_HAD_THE_LOBSTER_TABLENAME = "WhoHadTheLobster";
+	   public static final String FRACTION_TABLE_NAME = "Fraction";
 	   public static final String ORDER_ID = "order_id";
 	   public static final String PERSON_NAME = "person_name";
 	   public static final String PAID = "paid";
@@ -44,6 +44,10 @@ public class DBHelperWhoHadTheLobster extends SQLiteOpenHelper {
 	      "create table LetsGoDutch " +
 	      "(order_id integer, person_name text,paid boolean,paid_amount real,payment_type text,cash_due_back real,signature text,email_id text)"
 	      );
+	      db.execSQL(
+	      "create table Fraction " +
+	      "(order_id integer, person_name text,item_name text,units integer, up integer, down integer)"
+	      );
 	   }
 
 	   @Override
@@ -51,6 +55,7 @@ public class DBHelperWhoHadTheLobster extends SQLiteOpenHelper {
 	      // TODO Auto-generated method stub
 			  db.execSQL("DROP TABLE IF EXISTS "+WHO_HAD_THE_LOBSTER_TABLENAME);
 		      db.execSQL("DROP TABLE IF EXISTS "+LETS_GO_DUTCH_TABLE_NAME);
+		      db.execSQL("DROP TABLE IF EXISTS "+FRACTION_TABLE_NAME);
 	      onCreate(db);
 	   }
 

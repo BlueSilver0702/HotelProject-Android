@@ -50,7 +50,7 @@ public class MainActivity extends ActionBarActivity {
 			setUpButton(tempb,++count);			
 			
 			i++;
-			tempb = (Button)tr.findViewById(R.id.button2);
+			tempb = (Button)tr.findViewById(R.id.bt_minus);
 			setUpButton(tempb,++count);			
 			
 			i++;
@@ -68,7 +68,7 @@ public class MainActivity extends ActionBarActivity {
 			tempb = (Button)tr.findViewById(R.id.bt_checkout);
 			setUpButton(tempb,++count);			
 			
-			tempb = (Button)tr.findViewById(R.id.button2);
+			tempb = (Button)tr.findViewById(R.id.bt_minus);
 			setUpButton(tempb,++count);			
 			
 			table_layout.addView(tr);

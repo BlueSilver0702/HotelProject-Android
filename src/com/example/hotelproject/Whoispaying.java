@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import multipayerpaymentscreens.TipCouponMultipayer;
 import databaseutil.DBHelperLetsGoDutch;
 import databaseutil.DBHelperWhoHadTheLobster;
+import databaseutil.DBHandlerFraction;
 import payments.PaymentSettings;
 import serverutil.HandleServerDataTable;
 import serverutil.ItemDescDS;
@@ -41,6 +42,7 @@ public class Whoispaying extends ActionBarActivity {
 	ArrayList<ItemDescDS> all_items;
 	DBHelperLetsGoDutch dBHelperLetsGoDutch;
 	DBHelperWhoHadTheLobster dBHelperWhoHadTheLobster;
+	DBHandlerFraction dBHelperFraction;
 	InternetConnectionChecker ir;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -91,6 +93,7 @@ public class Whoispaying extends ActionBarActivity {
 	
 	dBHelperLetsGoDutch=new DBHelperLetsGoDutch(this);
 	dBHelperWhoHadTheLobster=new DBHelperWhoHadTheLobster(this);
+	dBHelperFraction = new DBHandlerFraction(this);
 	Bundle extras = getIntent().getExtras();
 	tableno = Integer.parseInt(extras.getString("table_no").trim());
 	HandleServerDataTable handleServerDataTable=new HandleServerDataTable(tableno);
@@ -170,7 +173,6 @@ public class Whoispaying extends ActionBarActivity {
 				        Intent sd=new Intent(Whoispaying.this,TipCouponMultipayer.class);
 				        sd.putExtras(bundle);
 				        startActivity(sd);
-						
 					}
 					
 				}
@@ -428,7 +430,7 @@ public class Whoispaying extends ActionBarActivity {
 			TextView tv_name = (TextView)row.findViewById(R.id.tv_item_name);
 			TextView tv_amount = (TextView)row.findViewById(R.id.tv_item_rate);
 			
-			tv_qty.setText(""+items.get(position).units);
+			tv_qty.setText(""+items.get(position).units.integer+":"+items.get(position).units.numerator+"/"+items.get(position).units.denominator);
 			tv_name.setText(items.get(position).item_name);
 			tv_amount.setText(PaymentSettings.CURRENCY_SIGN+items.get(position).total_price);
 
@@ -437,14 +439,4 @@ public class Whoispaying extends ActionBarActivity {
 		}
 
 	}
-
-	
-	
-	
-	
-	
-	
-	
-	
-	
 }

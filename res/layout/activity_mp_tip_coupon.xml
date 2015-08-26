@@ -2,13 +2,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-   android:background="@drawable/backg"
+    android:background="@drawable/backg"
     android:gravity="bottom"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="singlepayerpaymentscreens.TipCoupon"    >
+    tools:context="singlepayerpaymentscreens.TipCoupon" >
 
             <Button
                 android:id="@+id/bt_mp_agreeandpay"
@@ -17,8 +17,9 @@
                 android:layout_height="wrap_content"
                 android:layout_alignLeft="@+id/tbl_mp_tipcoupon"
                 android:layout_alignParentBottom="true"
-                android:layout_marginBottom="15dp"
+                android:layout_marginBottom="10dp"
                 android:background="@drawable/custom_btn_green"
+                android:minHeight="35dp"
                 android:text="Agree &amp; Pay" />
 
             <TableLayout
@@ -27,7 +28,7 @@
                 android:layout_height="wrap_content"
                 android:layout_above="@+id/bt_mp_agreeandpay"
                 android:layout_centerHorizontal="true"
-                android:layout_marginBottom="10dp" >
+                android:layout_marginBottom="5dp" >
 
                
                 <TableRow
@@ -80,7 +81,7 @@
                     android:id="@+id/tableRow2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp" >
+                    android:layout_marginTop="5dp" >
 
                     <Button
                         android:id="@+id/bt_mp_totaldue"
@@ -89,41 +90,59 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:background="@drawable/custom_btn_orange"
+                        android:minHeight="35dp"
                         android:text="Total due : $100" />
+
                 </TableRow>
             </TableLayout>
 
             <ImageView
                 android:id="@+id/iv_mp_coupon_tipcoupon"
                 android:layout_width="80dp"
-                android:layout_height="160dp"
+                android:layout_height="90dp"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentTop="true"
                 android:src="@drawable/coupon" />
-
-            <Button
-                android:id="@+id/bt_mp_amount_tipcoupon"
-                style="@style/btnStyleWhite"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/tv_mp_coupon_applied_tipcoupon"
-                android:layout_centerHorizontal="true"
-                android:layout_alignLeft="@+id/tv_mp_coupon_applied_tipcoupon"
-                android:layout_marginTop="20dp"
-                android:textSize="20sp"
-                android:background="@drawable/custom_btn_white"
-                android:text="Total:Amount" />
 
             <TextView
                 android:id="@+id/tv_mp_coupon_applied_tipcoupon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignTop="@+id/iv_mp_coupon_tipcoupon"
-                android:layout_marginTop="33dp"
+                android:layout_marginTop="3dp"
                 android:layout_toRightOf="@+id/iv_mp_coupon_tipcoupon"
+                android:height="30dp"
+                android:lines="3"
                 android:text="coupon applied"
                 android:textColor="#76ff03"
-                android:lines="3"
                 android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/bt_mp_amount_tipcoupon"
+                style="@style/btnStyleWhite"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/tv_mp_coupon_applied_tipcoupon"
+                android:layout_below="@+id/tv_mp_coupon_applied_tipcoupon"
+                android:background="@drawable/custom_btn_white"
+                android:text="Total:Amount"
+                android:textSize="20sp" />
+
+            <ScrollView
+                android:id="@+id/sv_review"
+                android:layout_width="fill_parent"
+                android:layout_height="180dp"
+                android:layout_below="@+id/iv_mp_coupon_tipcoupon"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="5dp" >
+
+                <TableLayout
+                    android:id="@+id/tbl_review"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" >
+
+                </TableLayout>
+
+            </ScrollView>
 
 </RelativeLayout>

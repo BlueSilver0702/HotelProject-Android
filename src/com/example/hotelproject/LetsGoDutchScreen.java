@@ -72,6 +72,8 @@ public class LetsGoDutchScreen extends ActionBarActivity {
 		tableRows=new ArrayList<TableRow>();
 		
 		int i;
+		
+		System.out.println("============////////////////////===++++++++" + no_of_payers);
 		for(i=0;i<no_of_payers-1;i++ ) {
 			
 			TableRow tr=(TableRow)LayoutInflater.from(LetsGoDutchScreen.this).inflate(R.layout.payer_row_with_concatinate, null);
@@ -109,7 +111,6 @@ public class LetsGoDutchScreen extends ActionBarActivity {
 	
 	
 	public void loadData(){
-		   
 
 		   mydb = new DBHelperLetsGoDutch(this);
 		   

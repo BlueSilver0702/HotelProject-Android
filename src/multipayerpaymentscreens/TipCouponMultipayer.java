@@ -2,6 +2,8 @@ package multipayerpaymentscreens;
 
 import payments.PaymentSettings;
 import serverutil.HandleCoupons;
+
+import com.example.hotelproject.LetsGoDutchScreen;
 import com.example.hotelproject.R;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.PopupMenu;
@@ -14,12 +16,16 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 public class TipCouponMultipayer extends ActionBarActivity {
@@ -35,9 +41,11 @@ public class TipCouponMultipayer extends ActionBarActivity {
 	int order_id;
 	String payer_name;
 	String who_is_paying;
+	TableLayout table_layout;
 	
 	private void LoadData(){   
-		   Bundle extraBundle;
+
+		Bundle extraBundle;
 		   extraBundle=getIntent().getBundleExtra("databundle");
 		   order_id=extraBundle.getInt("order_id");
 		   billAmount=extraBundle.getDouble("totaldue");
@@ -57,7 +65,37 @@ public class TipCouponMultipayer extends ActionBarActivity {
 		   
 		   iv_couponcode=(ImageView)findViewById(R.id.iv_mp_coupon_tipcoupon);
 
+		   // review table view section
+		   table_layout=(TableLayout)findViewById(R.id.tbl_review);
+		   table_layout.removeAllViews();
+		   
+//		   for(initi=0;i<no_of_payers-1;i++ ) {
+				
+				TableRow tr=(TableRow)LayoutInflater.from(TipCouponMultipayer.this).inflate(R.layout.payer_review_row, null);
+				Button textBtn = (Button)tr.findViewById(R.id.bt_text);
+				textBtn.setText("");
+				Button minusBtn = (Button)tr.findViewById(R.id.bt_minus);
+				minusBtn.setOnClickListener(new OnClickListener() {
 
+					@Override
+					public void onClick(View v) {
+												
+					}
+					
+				});
+				Button plusBtn = (Button)tr.findViewById(R.id.bt_plus);
+				plusBtn.setOnClickListener(new OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+											
+					}
+					
+				});
+
+				table_layout.addView(tr);
+				
+//		   }
 	      // Toast.makeText(this,""+extraBundle.getDouble("totaldue"), Toast.LENGTH_LONG).show();
 	   }
 	
@@ -288,6 +326,7 @@ public class TipCouponMultipayer extends ActionBarActivity {
 	    	bt_tipamountabsolute.setText("Tip @ "+tip+"%");
 		}
 	}
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.

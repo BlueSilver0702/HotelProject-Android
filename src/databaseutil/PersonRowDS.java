@@ -8,5 +8,4 @@ public class PersonRowDS {
 	public double CASH_DUE_BACK;
 	public String SIGNATURE;
 	public String EMAIL_ID;
-
 }

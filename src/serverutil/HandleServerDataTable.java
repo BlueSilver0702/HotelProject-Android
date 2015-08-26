@@ -51,10 +51,10 @@ public class HandleServerDataTable {
 					for(int i=0;i<json2.length();i++){
 						JSONObject innerObj=json2.getJSONObject(i);
 						item=new ItemDescDS();
-						item.units=Integer.parseInt(""+innerObj.get("item_qty"));
+						item.units.integer=Integer.parseInt(""+innerObj.get("item_qty"));
 						item.item_name=(String) innerObj.get("item_name");
 						item.price_per_unit= Double.parseDouble(""+innerObj.get("price_per_unit"));
-						item.total_price=item.units*item.price_per_unit;
+						item.total_price=item.units.value()*item.price_per_unit;
 						item.total_price=(double) Math.round(item.total_price * 100) / 100;
 						all_items.add(item);    	  
 					}
