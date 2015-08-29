@@ -467,9 +467,5 @@ public class PaymentOptionMultiPayer extends ActionBarActivity {
 	        stopService(new Intent(this, PayPalService.class));
 	        super.onDestroy();
 	    }
-	
-	
-	
-	//////////////////////////////////////////////////////////////////////////
-	
+		
 }

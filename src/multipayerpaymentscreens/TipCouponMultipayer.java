@@ -1,10 +1,16 @@
 package multipayerpaymentscreens;
 
-import payments.PaymentSettings;
-import serverutil.HandleCoupons;
+import java.util.ArrayList;
 
-import com.example.hotelproject.LetsGoDutchScreen;
+import payments.PaymentSettings;
+import serverutil.Fraction;
+import serverutil.HandleCoupons;
+import serverutil.ItemDescDS;
+
 import com.example.hotelproject.R;
+
+import databaseutil.DBHelperFraction;
+import databaseutil.FractionRowDS;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.PopupMenu.OnMenuItemClickListener;
@@ -42,6 +48,7 @@ public class TipCouponMultipayer extends ActionBarActivity {
 	String payer_name;
 	String who_is_paying;
 	TableLayout table_layout;
+	DBHelperFraction dBHelperFraction;
 	
 	private void LoadData(){   
 
@@ -65,15 +72,33 @@ public class TipCouponMultipayer extends ActionBarActivity {
 		   
 		   iv_couponcode=(ImageView)findViewById(R.id.iv_mp_coupon_tipcoupon);
 
+		   dBHelperFraction = new DBHelperFraction(this);
+		   ArrayList<FractionRowDS> fraction_list = dBHelperFraction.getAllPersons(order_id);
+		   ArrayList<ItemDescDS> desc_list = new ArrayList<ItemDescDS>();
+		   System.out.println(fraction_list.size()+":::::");
+		   for (int k=0; k<fraction_list.size(); k++) {
+			  FractionRowDS fractionItem = fraction_list.get(k);
+			  if (payer_name.equals(fractionItem.person_name)) {
+				  ItemDescDS descObj = new ItemDescDS();
+				  descObj.item_name = fractionItem.item_name;
+				  descObj.units = new Fraction(fractionItem.units, fractionItem.f_up, fractionItem.f_down);
+				  descObj.price_per_unit = fractionItem.price;
+				  desc_list.add(descObj);
+			  }
+		   }
 		   // review table view section
 		   table_layout=(TableLayout)findViewById(R.id.tbl_review);
 		   table_layout.removeAllViews();
 		   
-//		   for(initi=0;i<no_of_payers-1;i++ ) {
+		   for(int i=0;i<desc_list.size();i++) {
 				
 				TableRow tr=(TableRow)LayoutInflater.from(TipCouponMultipayer.this).inflate(R.layout.payer_review_row, null);
 				Button textBtn = (Button)tr.findViewById(R.id.bt_text);
-				textBtn.setText("");
+				double leftVal = desc_list.get(i).units.value();
+				
+				double currency_val = desc_list.get(i).price_per_unit*leftVal;
+				double rounded = (double)Math.round(currency_val*100)/100;
+				textBtn .setText(desc_list.get(i).units.integer+":"+desc_list.get(i).units.numerator+"/"+desc_list.get(i).units.denominator+" "+desc_list.get(i).item_name+" "+PaymentSettings.CURRENCY_SIGN+rounded);
 				Button minusBtn = (Button)tr.findViewById(R.id.bt_minus);
 				minusBtn.setOnClickListener(new OnClickListener() {
 
@@ -95,7 +120,7 @@ public class TipCouponMultipayer extends ActionBarActivity {
 
 				table_layout.addView(tr);
 				
-//		   }
+		   }
 	      // Toast.makeText(this,""+extraBundle.getDouble("totaldue"), Toast.LENGTH_LONG).show();
 	   }
 	

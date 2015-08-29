@@ -46,8 +46,10 @@ public class DBHelperWhoHadTheLobster extends SQLiteOpenHelper {
 	      );
 	      db.execSQL(
 	      "create table Fraction " +
-	      "(order_id integer, person_name text,item_name text,units integer, up integer, down integer)"
+	      "(order_id integer, person_name text,item_name text,price real,units integer, up integer, down integer)"
 	      );
+	      
+	      System.out.println("**********************************");
 	   }
 
 	   @Override

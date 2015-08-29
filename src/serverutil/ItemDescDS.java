@@ -12,4 +12,13 @@ public class ItemDescDS {
 		price_per_unit = 0.0;
 		total_price = 0.0;
 	}
+	
+	public ItemDescDS copy () {
+		ItemDescDS retObj = new ItemDescDS();
+		retObj.units = units.copy();
+		retObj.item_name = item_name;
+		retObj.price_per_unit = price_per_unit;
+		retObj.total_price = total_price;
+		return retObj;
+	}
 }

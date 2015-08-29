@@ -43,7 +43,6 @@ public class HandleServerDataTable {
 			
 			if(!jsonObject.has("Paid"))
 			{
-
 					JSONArray json2=jsonObject.getJSONArray("orders");
 					orderid=Integer.parseInt(""+jsonObject.get("order_id"));
 					ItemDescDS item;
@@ -58,7 +57,6 @@ public class HandleServerDataTable {
 						item.total_price=(double) Math.round(item.total_price * 100) / 100;
 						all_items.add(item);    	  
 					}
-			
 			}
 			else
 				all_items=null;

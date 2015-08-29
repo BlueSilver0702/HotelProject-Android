@@ -9,7 +9,7 @@ import serverutil.HandleServerDataTable;
 import serverutil.ItemDescDS;
 import serverutil.Order;
 import databaseutil.DBHelperWhoHadTheLobster;
-import databaseutil.DBHandlerFraction;
+import databaseutil.DBHelperFraction;
 import databaseutil.FractionRowDS;
 import databaseutil.PersonRowDS;
 import android.support.v7.app.ActionBarActivity;
@@ -48,7 +48,7 @@ public class WhoHadTheLobster extends ActionBarActivity {
 	ArrayList<ItemDescDS> all_items;
 	HandleServerDataTable handleServerDataTable;
 	DBHelperWhoHadTheLobster dBHelperWhoHadTheLobster;
-	DBHandlerFraction dBHelperFraction;
+	DBHelperFraction dBHelperFraction;
 	Button bt_total_amount;
 	TableLayout table_layout;
 	ArrayList<TableRow> tableRows;
@@ -93,7 +93,7 @@ public class WhoHadTheLobster extends ActionBarActivity {
 		  //   bt_total_amount=(Button)findViewById(R.id.bt_amount_who_had_the_lobster);
 		     
 		     dBHelperWhoHadTheLobster=new DBHelperWhoHadTheLobster(this);
-		     dBHelperFraction = new DBHandlerFraction(this);
+		     dBHelperFraction = new DBHelperFraction(this);
 		     handleServerDataTable=new HandleServerDataTable(tableno);
 			 handleServerDataTable.fetchDataFromServer();
 			 while(handleServerDataTable.parsingComplete);	
@@ -217,9 +217,7 @@ public class WhoHadTheLobster extends ActionBarActivity {
 			   orderItem.all_items = new ArrayList<ItemDescDS>();
 			   payers_order.add(orderItem);
 		   }
-		   
-//		   dBHelperFraction.insertData(order_id, "", "", 0, 0, 1);
-		   
+		  
 		   if (dBHelperWhoHadTheLobster.isThereAnyRecord(order_id)) {
 			   if(dBHelperWhoHadTheLobster.isAnyOnePaid(order_id)){
 				   
@@ -227,7 +225,7 @@ public class WhoHadTheLobster extends ActionBarActivity {
 				   for (int j=0; j<no_of_payers; j++) {
 					  for (int k=0; k<fraction_list.size(); k++) {
 						  FractionRowDS fractionItem = fraction_list.get(k);
-						  if (payers_order.get(j).payer_name == fractionItem.person_name) {
+						  if (payers_order.get(j).payer_name.equals(fractionItem.person_name)) {
 							  ItemDescDS descObj = new ItemDescDS();
 							  descObj.item_name = fractionItem.item_name;
 							  descObj.units = new Fraction(fractionItem.units, fractionItem.f_up, fractionItem.f_down);
@@ -304,9 +302,13 @@ private void setUpButton(final Button tempb,final String payer_name) {
 				    		if (!payers_delete_bool[k])
 				    			for (int j=0; j<payers_order.get(k).all_items.size(); j++) {
 				    				ItemDescDS itemObj = payers_order.get(k).all_items.get(j);
-				    				dBHelperFraction.insertData(order_id, payers_name[k], itemObj.item_name, itemObj.units.integer, itemObj.units.numerator, itemObj.units.denominator);
+				    				dBHelperFraction.insertData(order_id, payers_name[k], itemObj.item_name, itemObj.price_per_unit, itemObj.units.integer, itemObj.units.numerator, itemObj.units.denominator);
 				    			}
 				    	}
+				    	
+				    	int jj = dBHelperFraction.getAllPersons(order_id).size();
+				    	ArrayList<FractionRowDS> fraction_list = dBHelperFraction.getAllPersons(order_id);
+				    	System.out.println(jj+"-1111111111");
 				    }
 				    	
 					Bundle extradataBundle=new Bundle();
@@ -334,7 +336,6 @@ private void setUpButton(final Button tempb,final String payer_name) {
 					 }
 				}
 			}
-			
 		});
 		
 		tempb.setOnLongClickListener(new View.OnLongClickListener() {
@@ -350,12 +351,10 @@ private void setUpButton(final Button tempb,final String payer_name) {
 		        	Button bt_temp=(Button)tableRows.get(i).findViewById(R.id.bt_payer_name_who_had_the_lobster);
 		        	if(tempb.equals(bt_temp)){
 		        		payer_remove_index=i;
-		        		System.out.println(">>>>>>>>>>>>>>>>>> : index =" + payer_remove_index);
 		        		return false;
 		        	}
 		        }
 		        
-		        System.out.println(">>>>>>>>>>>>>>>>>> : index =" + payer_remove_index);
         		payer_remove_index=-1;
 				return false;
 			}
@@ -377,7 +376,6 @@ private void setUpButton(final Button tempb,final String payer_name) {
 		    	  		break;
 		            case DragEvent.ACTION_DROP:{
 
-		            	System.out.println("<<<<<<==============>>>>>> : " + payer_remove_index);
 		            	if (payer_remove_index == -1) {
 			    		for(int i=0;i<no_of_payers;i++){
 				    		 if(tempb.getText().toString().equals(payers_name[i]))
@@ -390,7 +388,7 @@ private void setUpButton(final Button tempb,final String payer_name) {
 				    			 
 				    			boolean isReviewed = false;
 				    			for (int jj = 0; jj < payers_order.get(i).all_items.size(); jj++) {
-				    				if (payers_order.get(i).all_items.get(jj).item_name == adapter.getItem(drop_item_remove_index).item_name) {
+				    				if (payers_order.get(i).all_items.get(jj).item_name.equals(adapter.getItem(drop_item_remove_index).item_name)) {
 				    					isReviewed = true;
 				    					payers_order.get(i).all_items.get(jj).units.integer ++;
 				    				}
@@ -458,19 +456,19 @@ private void setUpButton(final Button tempb,final String payer_name) {
 										//System.out.println("Size : " + tableRows.size() + "  Index "+ i);
 										
 										for (int i1=0;i1<no_of_payers;i1++) {
-											if (payers_name[i1] == payers_order.get(i1).payer_name) {
+											if (payers_name[i1].equals(payers_order.get(i1).payer_name)) {
 												Order nOrder = payers_order.get(i1);
 												Order oOrder = payers_order.get(payer_remove_index);
 												for (int i2=0;i2<oOrder.all_items.size();i2++) {
 													boolean isChecked = false;
 													for (int i3=0;i3<nOrder.all_items.size();i3++) {
-														if (oOrder.all_items.get(i2).item_name == nOrder.all_items.get(i3).item_name) {
+														if (oOrder.all_items.get(i2).item_name.equals(nOrder.all_items.get(i3).item_name)) {
 															isChecked = true;
 															payers_order.get(i1).all_items.get(i3).units.plus(oOrder.all_items.get(i2).units);
 														}
 													}
 													if (!isChecked) {
-														payers_order.get(i1).all_items.add(oOrder.all_items.get(i2));
+														payers_order.get(i1).all_items.add(oOrder.all_items.get(i2).copy());
 													}
 												}
 											}
@@ -627,23 +625,23 @@ private void setUpButton(final Button tempb,final String payer_name) {
 						for (int i1=0;i1<no_of_payers;i1++) {
 							if(payers_hilight[i1]==true) {
 								Order nOrder = payers_order.get(i1);
-								ItemDescDS removeItem = adapter.getItem(tempposition);
+								ItemDescDS removeItem = adapter.getItem(tempposition).copy();
 								
 								boolean isChecked = false;
 								for (int i3=0;i3<nOrder.all_items.size();i3++) {
-									if (removeItem.item_name == nOrder.all_items.get(i3).item_name) {
+									if (removeItem.item_name.equals(nOrder.all_items.get(i3).item_name)) {
 										isChecked = true;
 										payers_order.get(i1).all_items.get(i3).units.plus(removeItem.units.divideN(cnt));
 									}
 								}
 								if (!isChecked) {
-									ItemDescDS newItem = removeItem;
-									newItem.units.integer = 1;
-									newItem.units.divide(no_of_payers);
-									payers_order.get(i1).all_items.add(removeItem);
+									ItemDescDS newItem = removeItem.copy();
+									newItem.units.divide(cnt);
+									payers_order.get(i1).all_items.add(newItem);
 								}
 							}
 						}
+						
 						
 						double amountdue=removeItem(tempposition);
 						
@@ -668,8 +666,6 @@ private void setUpButton(final Button tempb,final String payer_name) {
 		    			if(adapter.getCount()==0)
 	    				  setAllButtonsBackgroundToDefault();
 			    		
-			    		
-
 			    		return false;
 			    	}
 				}
@@ -731,20 +727,20 @@ private void setUpButton(final Button tempb,final String payer_name) {
 				
 				for (int i1=0;i1<no_of_payers;i1++) {
 					Order nOrder = payers_order.get(i1);
-					ItemDescDS removeItem = adapter.getItem(drop_item_remove_index);
+					ItemDescDS removeItem = adapter.getItem(drop_item_remove_index).copy();
 					
 					boolean isChecked = false;
 					for (int i3=0;i3<nOrder.all_items.size();i3++) {
-						if (removeItem.item_name == nOrder.all_items.get(i3).item_name) {
+						if (removeItem.item_name.equals( nOrder.all_items.get(i3).item_name)) {
 							isChecked = true;
 							payers_order.get(i1).all_items.get(i3).units.plus(removeItem.units.divideN(no_of_payers));
 						}
 					}
+					
 					if (!isChecked) {
-						ItemDescDS newItem = removeItem;
-						newItem.units.integer = 1;
-						newItem.units.divide(no_of_payers);
-						payers_order.get(i1).all_items.add(removeItem);
+						ItemDescDS newObj = removeItem.copy();
+						newObj.units.divide(no_of_payers);
+						payers_order.get(i1).all_items.add(newObj);
 					}
 				}
 				
@@ -761,7 +757,7 @@ private void setUpButton(final Button tempb,final String payer_name) {
 	    			  }
 	    			  TextView tv_amt=(TextView)tableRows.get(real_index).findViewById(R.id.tv_payer_amount_who_had_the_lobster);
 	    			  tv_amt.setText(PaymentSettings.CURRENCY_SIGN+payers_payment_due[i]);
-	    	     }
+	    	    }
 				
 				return false;//super.onDoubleTap(e);
 			}

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import multipayerpaymentscreens.TipCouponMultipayer;
 import databaseutil.DBHelperLetsGoDutch;
 import databaseutil.DBHelperWhoHadTheLobster;
-import databaseutil.DBHandlerFraction;
+import databaseutil.DBHelperFraction;
 import payments.PaymentSettings;
 import serverutil.HandleServerDataTable;
 import serverutil.ItemDescDS;
@@ -42,7 +42,7 @@ public class Whoispaying extends ActionBarActivity {
 	ArrayList<ItemDescDS> all_items;
 	DBHelperLetsGoDutch dBHelperLetsGoDutch;
 	DBHelperWhoHadTheLobster dBHelperWhoHadTheLobster;
-	DBHandlerFraction dBHelperFraction;
+	DBHelperFraction dBHelperFraction;
 	InternetConnectionChecker ir;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -93,7 +93,7 @@ public class Whoispaying extends ActionBarActivity {
 	
 	dBHelperLetsGoDutch=new DBHelperLetsGoDutch(this);
 	dBHelperWhoHadTheLobster=new DBHelperWhoHadTheLobster(this);
-	dBHelperFraction = new DBHandlerFraction(this);
+	dBHelperFraction = new DBHelperFraction(this);
 	Bundle extras = getIntent().getExtras();
 	tableno = Integer.parseInt(extras.getString("table_no").trim());
 	HandleServerDataTable handleServerDataTable=new HandleServerDataTable(tableno);

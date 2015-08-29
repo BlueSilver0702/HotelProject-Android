@@ -14,7 +14,7 @@ public class HandlePaymentPaid {
 	public HandlePaymentPaid(int order_id,double amount,double discount,String signature) {
 		// TODO Auto-generated constructor stub
 		urlString = "http://calculator.gr-digital.org/html/php/update_payment_table.php?order_id="+order_id;
-		urlString+="&total_amount="+amount + "&discounted_amount="+discount +"&signature="+signature;
+		urlString +="&total_amount="+amount + "&discounted_amount="+discount +"&signature="+signature;
 	}
 	
 	public void readDataFromServer(String data){
