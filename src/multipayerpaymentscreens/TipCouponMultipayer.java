@@ -49,6 +49,9 @@ public class TipCouponMultipayer extends ActionBarActivity {
 	String who_is_paying;
 	TableLayout table_layout;
 	DBHelperFraction dBHelperFraction;
+	ArrayList<FractionRowDS> fraction_list;
+	ArrayList<ItemDescDS> desc_list;
+	ArrayList<ItemDescDS> empty_list;
 	
 	private void LoadData(){   
 
@@ -73,8 +76,9 @@ public class TipCouponMultipayer extends ActionBarActivity {
 		   iv_couponcode=(ImageView)findViewById(R.id.iv_mp_coupon_tipcoupon);
 
 		   dBHelperFraction = new DBHelperFraction(this);
-		   ArrayList<FractionRowDS> fraction_list = dBHelperFraction.getAllPersons(order_id);
-		   ArrayList<ItemDescDS> desc_list = new ArrayList<ItemDescDS>();
+		   fraction_list = dBHelperFraction.getAllPersons(order_id);
+		   desc_list = new ArrayList<ItemDescDS>();
+		   empty_list = new ArrayList<ItemDescDS>();
 		   System.out.println(fraction_list.size()+":::::");
 		   for (int k=0; k<fraction_list.size(); k++) {
 			  FractionRowDS fractionItem = fraction_list.get(k);
@@ -84,27 +88,63 @@ public class TipCouponMultipayer extends ActionBarActivity {
 				  descObj.units = new Fraction(fractionItem.units, fractionItem.f_up, fractionItem.f_down);
 				  descObj.price_per_unit = fractionItem.price;
 				  desc_list.add(descObj);
+			  } else if (fractionItem.person_name.equals("empty")) {
+				  ItemDescDS emptyObj = new ItemDescDS();
+				  emptyObj.item_name = fractionItem.item_name;
+				  emptyObj.units = new Fraction(fractionItem.units, fractionItem.f_up, fractionItem.f_down);
+				  emptyObj.price_per_unit = fractionItem.price;
+				  empty_list.add(emptyObj);
 			  }
 		   }
 		   // review table view section
 		   table_layout=(TableLayout)findViewById(R.id.tbl_review);
 		   table_layout.removeAllViews();
 		   
-		   for(int i=0;i<desc_list.size();i++) {
-				
+		   for(int ii=0;ii<desc_list.size();ii++) {
+				final int iii = ii;
 				TableRow tr=(TableRow)LayoutInflater.from(TipCouponMultipayer.this).inflate(R.layout.payer_review_row, null);
-				Button textBtn = (Button)tr.findViewById(R.id.bt_text);
-				double leftVal = desc_list.get(i).units.value();
+				final Button textBtn = (Button)tr.findViewById(R.id.bt_text);
+				double leftVal = desc_list.get(ii).units.value();
 				
-				double currency_val = desc_list.get(i).price_per_unit*leftVal;
-				double rounded = (double)Math.round(currency_val*100)/100;
-				textBtn .setText(desc_list.get(i).units.integer+":"+desc_list.get(i).units.numerator+"/"+desc_list.get(i).units.denominator+" "+desc_list.get(i).item_name+" "+PaymentSettings.CURRENCY_SIGN+rounded);
+				double currency_val = desc_list.get(ii).price_per_unit*leftVal;
+				final double rounded = (double)Math.round(currency_val*100)/100;
+				textBtn .setText(desc_list.get(ii).units.integer+":"+desc_list.get(ii).units.numerator+"/"+desc_list.get(ii).units.denominator+" "+desc_list.get(ii).item_name+" "+PaymentSettings.CURRENCY_SIGN+rounded);
 				Button minusBtn = (Button)tr.findViewById(R.id.bt_minus);
 				minusBtn.setOnClickListener(new OnClickListener() {
 
 					@Override
 					public void onClick(View v) {
-												
+//						desc_list.get(iii).units.integer --;
+						boolean isChecked = false;
+						for (int jj=0; jj<empty_list.size(); jj++) {
+							if (empty_list.get(jj).item_name.equals(desc_list.get(iii).item_name)) {
+								isChecked = true;
+								if (desc_list.get(iii).units.value() > 1) {
+									empty_list.get(jj).units.integer ++;
+									desc_list.get(iii).units.integer --;
+								} else {
+									empty_list.get(jj).units.plus(desc_list.get(iii).units);
+									desc_list.get(iii).units.integer = 0;
+									desc_list.get(iii).units.numerator = 0;
+									desc_list.get(iii).units.denominator = 1;
+								}
+							}
+						}
+						if (!isChecked) {
+							if (desc_list.get(iii).units.value() > 1) {
+								ItemDescDS nItem = desc_list.get(iii).copy();
+								nItem.units = new Fraction(1, 0, 1);
+								empty_list.add(nItem);
+								desc_list.get(iii).units.integer --; 
+							} else {
+								empty_list.add(desc_list.get(iii).copy());
+								desc_list.get(iii).units.integer = 0;
+								desc_list.get(iii).units.numerator = 0;
+								desc_list.get(iii).units.denominator = 1;
+							}
+						}
+						
+						textBtn.setText(desc_list.get(iii).units.integer+":"+desc_list.get(iii).units.numerator+"/"+desc_list.get(iii).units.denominator+" "+desc_list.get(iii).item_name+" "+PaymentSettings.CURRENCY_SIGN+rounded);
 					}
 					
 				});
@@ -113,7 +153,35 @@ public class TipCouponMultipayer extends ActionBarActivity {
 
 					@Override
 					public void onClick(View v) {
-											
+						boolean isChecked = false;
+						for (int jj=0; jj<empty_list.size(); jj++) {
+							if (empty_list.get(jj).item_name.equals(desc_list.get(iii).item_name)) {
+								isChecked = true;
+								if (desc_list.get(iii).units.value() > 1) {
+									empty_list.get(jj).units.integer ++;
+									desc_list.get(iii).units.integer --;
+								} else {
+									empty_list.get(jj).units.plus(desc_list.get(iii).units);
+									desc_list.get(iii).units.integer = 0;
+									desc_list.get(iii).units.numerator = 0;
+									desc_list.get(iii).units.denominator = 1;
+								}
+							}
+						}
+						if (!isChecked) {
+							if (desc_list.get(iii).units.value() > 1) {
+								ItemDescDS nItem = desc_list.get(iii).copy();
+								nItem.units = new Fraction(1, 0, 1);
+								empty_list.add(nItem);
+								desc_list.get(iii).units.integer --; 
+							} else {
+								empty_list.add(desc_list.get(iii).copy());
+								desc_list.get(iii).units.integer = 0;
+								desc_list.get(iii).units.numerator = 0;
+								desc_list.get(iii).units.denominator = 1;
+							}
+						}
+						textBtn.setText(desc_list.get(iii).units.integer+":"+desc_list.get(iii).units.numerator+"/"+desc_list.get(iii).units.denominator+" "+desc_list.get(iii).item_name+" "+PaymentSettings.CURRENCY_SIGN+rounded);
 					}
 					
 				});

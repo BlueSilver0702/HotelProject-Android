@@ -200,13 +200,13 @@ public class WhoHadTheLobster extends ActionBarActivity {
 		    	payers_payment_due=new double[no_of_payers];
 		    	payers_delete_bool = new boolean[no_of_payers];
 		    	payers_hilight=new boolean[no_of_payers];
-			    for(int i=0;i<no_of_payers;i++){
+			    for(int i=0;i<no_of_payers;i++) {
 	    			  payers_paid[i]=false;
 	    			  payers_name[i]="Payer "+(i+1);
 	    			  payers_payment_due[i]=0;
 	    			  payers_hilight[i]=false;
 	    			  dBHelperWhoHadTheLobster.insertData(order_id, payers_name[i],false, payers_payment_due[i]);
-	    		  }
+	    		}
 			    
 		   }
 		   
