@@ -117,6 +117,13 @@ public class DBHelperWhoHadTheLobster extends SQLiteOpenHelper {
 	      new String[] { Integer.toString(order_id) });
 	   }
 	   
+	   public Integer deleteDataNoPaid (Integer order_id)
+	   {
+	      SQLiteDatabase db = this.getWritableDatabase();
+	      return db.delete(WHO_HAD_THE_LOBSTER_TABLENAME, 
+	      "order_id = ? AND paid = 0", 
+	      new String[] { Integer.toString(order_id) });
+	   }
 	   
 	   public boolean isAnyOnePaid(int order_id)
 	   {

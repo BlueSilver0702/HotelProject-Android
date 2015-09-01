@@ -93,6 +93,13 @@ public class DBHelperFraction extends SQLiteOpenHelper {
 	      new String[] { Integer.toString(order_id) });
 	   }
 	   
+	   public Integer deleteEmptyData (Integer order_id) {
+		   SQLiteDatabase db = this.getWritableDatabase();
+		      return db.delete(FRACTION_TABLE_NAME, 
+		      "order_id = ? AND person_name = 'empty'", 
+		      new String[] { Integer.toString(order_id) });
+	   }
+	   
 	   public ArrayList<FractionRowDS> getAllPersons(int order_id)
 	   {
 	      ArrayList<FractionRowDS> array_list=new ArrayList<FractionRowDS>();

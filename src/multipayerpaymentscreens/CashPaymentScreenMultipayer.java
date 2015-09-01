@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -50,8 +51,24 @@ public class CashPaymentScreenMultipayer extends ActionBarActivity {
 		loadData();
 		
 		tv_amount.setText(PaymentSettings.CURRENCY_SIGN+ totaldue);
-		roundupto=totaldue-(totaldue%50)+50;
+		
+		if (totaldue > 100) {
+			roundupto=totaldue-(totaldue%10)+10;
+		} else {
+			roundupto=totaldue-(totaldue%5)+5;
+		}
+		
 		et_roundupto.setText(PaymentSettings.CURRENCY_SIGN+roundupto);
+		et_roundupto.setOnClickListener(new OnClickListener(){
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				totaldue = roundupto;
+				tv_amount.setText(PaymentSettings.CURRENCY_SIGN+ totaldue);
+			}
+			
+		});
 		dueback=0;
 		tv_dueback.setText("Cash Due Back: "+PaymentSettings.CURRENCY_SIGN + dueback);
 		et_leaving.addTextChangedListener(new TextWatcher() {

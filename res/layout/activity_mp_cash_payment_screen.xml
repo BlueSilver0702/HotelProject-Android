@@ -40,11 +40,13 @@
         android:background="@drawable/custom_et_dark_blue"
         android:editable="false"
         android:ems="10"
+        android:gravity="center_vertical|center_horizontal"
         android:padding="15dp"
         android:singleLine="true"
         android:text="Roundupto"
         android:textColor="#FFFFFF"
         android:textSize="20sp" >
+
     </EditText>
 
     <TextView

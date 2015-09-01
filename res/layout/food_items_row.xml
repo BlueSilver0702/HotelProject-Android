@@ -10,29 +10,6 @@
         android:padding="5dp" >
 
         <TextView
-            android:id="@+id/tv_item_qty"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:singleLine="true"
-
-            android:text="QTY"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="#FFFFFF" />
-
-        <TextView
-            android:id="@+id/tv_item_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toRightOf="@+id/tv_item_qty"
-            android:paddingLeft="10dp"
-            android:singleLine="true"
-            android:text="Medium Text"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="#FFFFFF" />
-
-        <TextView
             android:id="@+id/tv_item_rate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -53,11 +30,73 @@
             android:id="@+id/tv_quantityQTY"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/tv_item_qty"
-
-            android:textSize="10sp"
+            android:layout_alignBottom="@+id/tv_item_rate"
+            android:layout_below="@+id/tv_item_int"
+            android:text="Qty"
             android:textColor="#FFFFFF"
-            android:text="Qty" />
+            android:textSize="10sp" />
+
+        <TextView
+            android:id="@+id/tv_item_int"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:singleLine="true"
+            android:text="1"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="#FFFFFF" />
+
+        <TextView
+            android:id="@+id/tv_item_num"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/tv_item_sla"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@+id/tv_item_int"
+            android:layout_marginTop="2dp"
+            android:singleLine="true"
+            android:text="2"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="#FFFFFF" />
+
+        <TextView
+            android:id="@+id/tv_item_sla"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/tv_item_num"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="6dp"
+            android:singleLine="true"
+            android:text="/"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="#FFFFFF" />
+        
+        <TextView
+            android:id="@+id/tv_item_den"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/tv_item_sla"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="6dp"
+            android:layout_marginTop="10dp"
+            android:singleLine="true"
+            android:text="4"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="#FFFFFF" />
+
+        <TextView
+            android:id="@+id/tv_item_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/tv_item_int"
+            android:layout_alignParentTop="true"
+            android:paddingLeft="10dp"
+            android:layout_marginLeft="28dp"
+            android:singleLine="true"
+            android:text="Medium Text"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="#FFFFFF" />
 
     </RelativeLayout>
 

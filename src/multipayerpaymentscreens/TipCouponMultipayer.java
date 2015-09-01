@@ -75,6 +75,7 @@ public class TipCouponMultipayer extends ActionBarActivity {
 		   
 		   iv_couponcode=(ImageView)findViewById(R.id.iv_mp_coupon_tipcoupon);
 
+		   if (!who_is_paying.equals("who_had_the_lobster")) return;
 		   dBHelperFraction = new DBHelperFraction(this);
 		   fraction_list = dBHelperFraction.getAllPersons(order_id);
 		   desc_list = new ArrayList<ItemDescDS>();
@@ -82,7 +83,7 @@ public class TipCouponMultipayer extends ActionBarActivity {
 		   System.out.println(fraction_list.size()+":::::");
 		   for (int k=0; k<fraction_list.size(); k++) {
 			  FractionRowDS fractionItem = fraction_list.get(k);
-			  if (payer_name.equals(fractionItem.person_name)) {
+			  if (fractionItem.person_name.equals(payer_name)) {
 				  ItemDescDS descObj = new ItemDescDS();
 				  descObj.item_name = fractionItem.item_name;
 				  descObj.units = new Fraction(fractionItem.units, fractionItem.f_up, fractionItem.f_down);
@@ -102,13 +103,28 @@ public class TipCouponMultipayer extends ActionBarActivity {
 		   
 		   for(int ii=0;ii<desc_list.size();ii++) {
 				final int iii = ii;
-				TableRow tr=(TableRow)LayoutInflater.from(TipCouponMultipayer.this).inflate(R.layout.payer_review_row, null);
-				final Button textBtn = (Button)tr.findViewById(R.id.bt_text);
+				final TableRow tr=(TableRow)LayoutInflater.from(TipCouponMultipayer.this).inflate(R.layout.payer_review_row, null);
+				final TextView tv_text = (TextView)tr.findViewById(R.id.tv_text);
+				final TextView tv_int = (TextView)tr.findViewById(R.id.tv_int);
+				final TextView tv_num = (TextView)tr.findViewById(R.id.tv_num);
+				final TextView tv_den = (TextView)tr.findViewById(R.id.tv_den);
+				final TextView tv_sla = (TextView)tr.findViewById(R.id.tv_sla);
 				double leftVal = desc_list.get(ii).units.value();
 				
 				double currency_val = desc_list.get(ii).price_per_unit*leftVal;
-				final double rounded = (double)Math.round(currency_val*100)/100;
-				textBtn .setText(desc_list.get(ii).units.integer+":"+desc_list.get(ii).units.numerator+"/"+desc_list.get(ii).units.denominator+" "+desc_list.get(ii).item_name+" "+PaymentSettings.CURRENCY_SIGN+rounded);
+				double rounded = (double)Math.round(currency_val*100)/100;
+				tv_text.setText("Btl. "+desc_list.get(ii).item_name+" "+PaymentSettings.CURRENCY_SIGN+rounded);
+				tv_int.setText(""+desc_list.get(ii).units.integer);
+				tv_num.setText(""+desc_list.get(ii).units.numerator);
+				tv_den.setText(""+desc_list.get(ii).units.denominator);
+				if (desc_list.get(ii).units.integer == 0) {
+					tv_int.setVisibility(View.INVISIBLE);
+				}
+				if (desc_list.get(ii).units.numerator == 0) {
+					tv_num.setVisibility(View.GONE);
+					tv_den.setVisibility(View.GONE);
+					tv_sla.setVisibility(View.GONE);
+				}
 				Button minusBtn = (Button)tr.findViewById(R.id.bt_minus);
 				minusBtn.setOnClickListener(new OnClickListener() {
 
@@ -116,14 +132,17 @@ public class TipCouponMultipayer extends ActionBarActivity {
 					public void onClick(View v) {
 //						desc_list.get(iii).units.integer --;
 						boolean isChecked = false;
+						double adjust = 0.0;
 						for (int jj=0; jj<empty_list.size(); jj++) {
 							if (empty_list.get(jj).item_name.equals(desc_list.get(iii).item_name)) {
 								isChecked = true;
 								if (desc_list.get(iii).units.value() > 1) {
 									empty_list.get(jj).units.integer ++;
 									desc_list.get(iii).units.integer --;
+									adjust = desc_list.get(iii).price_per_unit; 
 								} else {
 									empty_list.get(jj).units.plus(desc_list.get(iii).units);
+									adjust = desc_list.get(iii).units.value()*desc_list.get(iii).price_per_unit;
 									desc_list.get(iii).units.integer = 0;
 									desc_list.get(iii).units.numerator = 0;
 									desc_list.get(iii).units.denominator = 1;
@@ -135,16 +154,50 @@ public class TipCouponMultipayer extends ActionBarActivity {
 								ItemDescDS nItem = desc_list.get(iii).copy();
 								nItem.units = new Fraction(1, 0, 1);
 								empty_list.add(nItem);
-								desc_list.get(iii).units.integer --; 
+								desc_list.get(iii).units.integer --;
+								adjust = desc_list.get(iii).price_per_unit;
 							} else {
 								empty_list.add(desc_list.get(iii).copy());
+								adjust = desc_list.get(iii).units.value()*desc_list.get(iii).price_per_unit;
 								desc_list.get(iii).units.integer = 0;
 								desc_list.get(iii).units.numerator = 0;
 								desc_list.get(iii).units.denominator = 1;
 							}
 						}
 						
-						textBtn.setText(desc_list.get(iii).units.integer+":"+desc_list.get(iii).units.numerator+"/"+desc_list.get(iii).units.denominator+" "+desc_list.get(iii).item_name+" "+PaymentSettings.CURRENCY_SIGN+rounded);
+						double leftVal1 = desc_list.get(iii).units.value();
+						double currency_val1 = desc_list.get(iii).price_per_unit*leftVal1;
+						double rounded1 = (double)Math.round(currency_val1*100)/100;
+						
+						tv_text.setText("Btl. "+desc_list.get(iii).item_name+" "+PaymentSettings.CURRENCY_SIGN+rounded1);
+						tv_int.setText(""+desc_list.get(iii).units.integer);
+						tv_num.setText(""+desc_list.get(iii).units.numerator);
+						tv_den.setText(""+desc_list.get(iii).units.denominator);
+						if (desc_list.get(iii).units.integer == 0) {
+							tv_int.setVisibility(View.INVISIBLE);
+						}
+						if (desc_list.get(iii).units.numerator == 0) {
+							tv_num.setVisibility(View.GONE);
+							tv_den.setVisibility(View.GONE);
+							tv_sla.setVisibility(View.GONE);
+						}
+						
+						if (desc_list.get(iii).units.value() == 0.0) {
+							System.out.println(""+iii+":"+desc_list.size());
+//							table_layout.removeViewAt(iii);
+							tr.setVisibility(View.GONE);
+//							desc_list.remove(iii);
+						}
+						
+						billAmount-=adjust;
+						billAmount=(double) Math.round(billAmount * 100) / 100;
+						bt_show_amount.setText("Total: "+PaymentSettings.CURRENCY_SIGN + billAmount);
+						
+						tipAmount=(billAmount*15)/100;
+						totaldue=(billAmount+tipAmount);
+						totaldue=(double) Math.round(totaldue * 100) / 100;
+						bt_total_amount.setText("Total Due: "+ PaymentSettings.CURRENCY_SIGN+totaldue);
+
 					}
 					
 				});
@@ -153,35 +206,47 @@ public class TipCouponMultipayer extends ActionBarActivity {
 
 					@Override
 					public void onClick(View v) {
-						boolean isChecked = false;
+						double adjust = 0.0;
 						for (int jj=0; jj<empty_list.size(); jj++) {
 							if (empty_list.get(jj).item_name.equals(desc_list.get(iii).item_name)) {
-								isChecked = true;
-								if (desc_list.get(iii).units.value() > 1) {
-									empty_list.get(jj).units.integer ++;
-									desc_list.get(iii).units.integer --;
+								if (empty_list.get(jj).units.value() > 1) {
+									empty_list.get(jj).units.integer --;
+									desc_list.get(iii).units.integer ++;
+									adjust = desc_list.get(iii).price_per_unit;
 								} else {
-									empty_list.get(jj).units.plus(desc_list.get(iii).units);
-									desc_list.get(iii).units.integer = 0;
-									desc_list.get(iii).units.numerator = 0;
-									desc_list.get(iii).units.denominator = 1;
+									desc_list.get(iii).units.plus(empty_list.get(jj).units);
+									adjust = empty_list.get(jj).units.value()*empty_list.get(jj).price_per_unit;
+									empty_list.get(jj).units = new Fraction(0, 0, 1);
 								}
 							}
 						}
-						if (!isChecked) {
-							if (desc_list.get(iii).units.value() > 1) {
-								ItemDescDS nItem = desc_list.get(iii).copy();
-								nItem.units = new Fraction(1, 0, 1);
-								empty_list.add(nItem);
-								desc_list.get(iii).units.integer --; 
-							} else {
-								empty_list.add(desc_list.get(iii).copy());
-								desc_list.get(iii).units.integer = 0;
-								desc_list.get(iii).units.numerator = 0;
-								desc_list.get(iii).units.denominator = 1;
-							}
+						
+						double leftVal1 = desc_list.get(iii).units.value();
+						double currency_val1 = desc_list.get(iii).price_per_unit*leftVal1;
+						double rounded1 = (double)Math.round(currency_val1*100)/100;
+						
+//						textBtn.setText(desc_list.get(iii).units.integer+":"+desc_list.get(iii).units.numerator+"/"+desc_list.get(iii).units.denominator+" "+desc_list.get(iii).item_name+" "+PaymentSettings.CURRENCY_SIGN+rounded1);
+						tv_text.setText("Btl. "+desc_list.get(iii).item_name+" "+PaymentSettings.CURRENCY_SIGN+rounded1);
+						tv_int.setText(""+desc_list.get(iii).units.integer);
+						tv_num.setText(""+desc_list.get(iii).units.numerator);
+						tv_den.setText(""+desc_list.get(iii).units.denominator);
+						if (desc_list.get(iii).units.integer == 0) {
+							tv_int.setVisibility(View.INVISIBLE);
 						}
-						textBtn.setText(desc_list.get(iii).units.integer+":"+desc_list.get(iii).units.numerator+"/"+desc_list.get(iii).units.denominator+" "+desc_list.get(iii).item_name+" "+PaymentSettings.CURRENCY_SIGN+rounded);
+						if (desc_list.get(iii).units.numerator == 0) {
+							tv_num.setVisibility(View.GONE);
+							tv_den.setVisibility(View.GONE);
+							tv_sla.setVisibility(View.GONE);
+						}
+
+						billAmount+=adjust;
+						billAmount=(double) Math.round(billAmount * 100) / 100;
+						bt_show_amount.setText("Total: "+PaymentSettings.CURRENCY_SIGN + billAmount);
+						
+						tipAmount=(billAmount*15)/100;
+						totaldue=(billAmount+tipAmount);
+						totaldue=(double) Math.round(totaldue * 100) / 100;
+						bt_total_amount.setText("Total Due: "+ PaymentSettings.CURRENCY_SIGN+totaldue);
 					}
 					
 				});
@@ -391,6 +456,16 @@ public class TipCouponMultipayer extends ActionBarActivity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
+				ArrayList<FractionRowDS> fraction_list = dBHelperFraction.getAllPersons(order_id);
+				dBHelperFraction.deleteEmptyData(order_id);
+				ArrayList<FractionRowDS> fraction_list1 = dBHelperFraction.getAllPersons(order_id);
+				for(int k=0;k<empty_list.size();k++){	
+		    		ItemDescDS itemObj = empty_list.get(k);
+		    		if (itemObj.units.value() > 0)
+		    			dBHelperFraction.insertData(order_id, "empty", itemObj.item_name, itemObj.price_per_unit, itemObj.units.integer, itemObj.units.numerator, itemObj.units.denominator);
+		    	}
+				ArrayList<FractionRowDS> fraction_list2 = dBHelperFraction.getAllPersons(order_id);
+				System.out.println(""+fraction_list.size()+":"+fraction_list1.size()+":"+fraction_list2.size());
 				Bundle extrabundle = new Bundle();
 				
 				extrabundle.putDouble("totaldue",totaldue);
@@ -409,7 +484,6 @@ public class TipCouponMultipayer extends ActionBarActivity {
 		
 	}
 
-	
 	public void setAmountTipButtonsText(double totaldue,int tip){
 		totaldue=(double) Math.round(totaldue * 100) / 100;
 		bt_total_amount.setText("Total due: "+PaymentSettings.CURRENCY_SIGN+ totaldue);
@@ -443,7 +517,5 @@ public class TipCouponMultipayer extends ActionBarActivity {
 	public void onBackPressed() {
 		// TODO Auto-generated method stub
 		super.onBackPressed();
-		
-		
 	}
 }

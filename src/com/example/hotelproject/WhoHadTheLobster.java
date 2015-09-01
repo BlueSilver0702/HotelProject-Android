@@ -144,6 +144,21 @@ public class WhoHadTheLobster extends ActionBarActivity {
 		    System.out.println("==========++++++++3");
 	    }else{
 	    	all_items=new ArrayList<ItemDescDS>();
+	    	
+	    	ArrayList<FractionRowDS> fraction_list = dBHelperFraction.getAllPersons(order_id);
+			for (int k=0; k<fraction_list.size(); k++) {
+				FractionRowDS fractionItem = fraction_list.get(k);
+			    if (fractionItem.person_name.equals("empty")) {
+				  ItemDescDS descObj = new ItemDescDS();
+				  descObj.item_name = fractionItem.item_name;
+				  descObj.price_per_unit = fractionItem.price;
+				  descObj.units = new Fraction(fractionItem.units, fractionItem.f_up, fractionItem.f_down);
+				  descObj.total_price=descObj.units.value()*descObj.price_per_unit;
+				  descObj.total_price=(double) Math.round(descObj.total_price * 100) / 100;
+				  all_items.add(descObj);
+			    }
+		    }   
+			   
 	    	adapter = new MyListAdapter(WhoHadTheLobster.this, R.layout.food_items_row, all_items);
 	    	billListView = (ListView)findViewById(R.id.lv_item_table_who_had_the_lobster);
 		    billListView.setAdapter(adapter);	
@@ -228,6 +243,7 @@ public class WhoHadTheLobster extends ActionBarActivity {
 						  if (payers_order.get(j).payer_name.equals(fractionItem.person_name)) {
 							  ItemDescDS descObj = new ItemDescDS();
 							  descObj.item_name = fractionItem.item_name;
+							  descObj.price_per_unit = fractionItem.price;
 							  descObj.units = new Fraction(fractionItem.units, fractionItem.f_up, fractionItem.f_down);
 							  payers_order.get(j).all_items.add(descObj);
 						  }
@@ -262,7 +278,6 @@ public class WhoHadTheLobster extends ActionBarActivity {
 			
 			tableRows.add(tr);
 			table_layout.addView(tr);
-			
 		}
 		
 	}
@@ -309,6 +324,21 @@ private void setUpButton(final Button tempb,final String payer_name) {
 				    	int jj = dBHelperFraction.getAllPersons(order_id).size();
 				    	ArrayList<FractionRowDS> fraction_list = dBHelperFraction.getAllPersons(order_id);
 				    	System.out.println(jj+"-1111111111");
+				    } else {
+				    	dBHelperWhoHadTheLobster.deleteDataNoPaid(order_id);
+				    	for(int i=0;i<no_of_payers;i++){
+				    		if (!payers_delete_bool[i] && !payers_paid[i])
+				    			dBHelperWhoHadTheLobster.insertData(order_id, payers_name[i],false,payers_payment_due[i]);
+				    	}
+				    	
+				    	dBHelperFraction.deleteData(order_id);
+				    	for(int k=0;k<no_of_payers;k++){
+				    		if (!payers_delete_bool[k])
+				    			for (int j=0; j<payers_order.get(k).all_items.size(); j++) {
+				    				ItemDescDS itemObj = payers_order.get(k).all_items.get(j);
+				    				dBHelperFraction.insertData(order_id, payers_name[k], itemObj.item_name, itemObj.price_per_unit, itemObj.units.integer, itemObj.units.numerator, itemObj.units.denominator);
+				    			}
+				    	}
 				    }
 				    	
 					Bundle extradataBundle=new Bundle();
@@ -390,7 +420,7 @@ private void setUpButton(final Button tempb,final String payer_name) {
 				    			for (int jj = 0; jj < payers_order.get(i).all_items.size(); jj++) {
 				    				if (payers_order.get(i).all_items.get(jj).item_name.equals(adapter.getItem(drop_item_remove_index).item_name)) {
 				    					isReviewed = true;
-				    					payers_order.get(i).all_items.get(jj).units.integer ++;
+				    					payers_order.get(i).all_items.get(jj).units.plusM(adapter.getItem(drop_item_remove_index).units);
 				    				}
 				    			}
 				    			
@@ -510,7 +540,7 @@ private void setUpButton(final Button tempb,final String payer_name) {
 	
 	public double removeItem(int index){
 		
-		double amount=adapter.getItem(index).price_per_unit;
+		double amount=0.0;
 		if(adapter.getItem(index).units.value()<=1){
 			final Handler handler = new Handler(); 
 			  handler.postDelayed(new Runnable() { 
@@ -521,10 +551,11 @@ private void setUpButton(final Button tempb,final String payer_name) {
 				    	adapter.remove(adapter.getItem(drop_item_remove_index));
 				    } 
 				}, 100);
-			
+			amount = adapter.getItem(index).price_per_unit * adapter.getItem(index).units.value();
 		}else{
 			adapter.getItem(index).units.integer --;
 			adapter.getItem(index).total_price-=adapter.getItem(index).price_per_unit;
+			amount = adapter.getItem(index).price_per_unit;
 		}
 				
 		final Handler handler = new Handler(); 
@@ -671,13 +702,26 @@ private void setUpButton(final Button tempb,final String payer_name) {
 				}
 			});
 			
-			
-			TextView tv_qty = (TextView)row.findViewById(R.id.tv_item_qty);
+			TextView tv_int = (TextView)row.findViewById(R.id.tv_item_int);
+			TextView tv_num = (TextView)row.findViewById(R.id.tv_item_num);
+			TextView tv_den = (TextView)row.findViewById(R.id.tv_item_den);
+			TextView tv_sla = (TextView)row.findViewById(R.id.tv_item_sla);
 			TextView tv_name = (TextView)row.findViewById(R.id.tv_item_name);
 
 			TextView tv_amount = (TextView)row.findViewById(R.id.tv_item_rate);
 			
-			tv_qty.setText(""+items.get(position).units.integer+":"+items.get(position).units.numerator+"/"+items.get(position).units.denominator);
+			tv_int.setText(""+items.get(position).units.integer);
+			tv_num.setText(""+items.get(position).units.numerator);
+			tv_den.setText(""+items.get(position).units.denominator);
+			if (items.get(position).units.integer == 0) {
+				tv_int.setVisibility(View.GONE);
+			}
+			
+			if (items.get(position).units.numerator == 0) {
+				tv_num.setVisibility(View.GONE);
+				tv_den.setVisibility(View.GONE);
+				tv_sla.setVisibility(View.GONE);
+			}
 			tv_name.setText(items.get(position).item_name);
 			tv_amount.setText(PaymentSettings.CURRENCY_SIGN+items.get(position).total_price);
 
@@ -806,7 +850,7 @@ private void setUpButton(final Button tempb,final String payer_name) {
 				payer_remove_index = -1;
 				ClipData data = ClipData.newPlainText("DRAG", "");
 		        View.DragShadowBuilder shadow = new View.DragShadowBuilder(tempView);
-		        TextView tv_itemQyantity=(TextView)shadow.getView().findViewById(R.id.tv_item_qty);
+		        TextView tv_itemQyantity=(TextView)shadow.getView().findViewById(R.id.tv_item_int);
 		        String itemQTYText= tv_itemQyantity.getText().toString();
 	
 //		        double realValue = 1;

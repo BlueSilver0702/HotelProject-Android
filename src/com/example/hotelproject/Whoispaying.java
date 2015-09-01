@@ -294,7 +294,6 @@ public class Whoispaying extends ActionBarActivity {
 			                	    editor.commit();
 			                		Intent myIntent = new Intent(Whoispaying.this, WhoHadTheLobster.class);
 			                		startActivity( myIntent);
-									
 							   }
 					    }else{
 					    	showNoOfPersonDailogBox(2);
@@ -426,11 +425,26 @@ public class Whoispaying extends ActionBarActivity {
 			LayoutInflater inflater = getLayoutInflater();
 			row = inflater.inflate(layoutResourceId, parent, false);
 			
-			TextView tv_qty = (TextView)row.findViewById(R.id.tv_item_qty);
+			TextView tv_int = (TextView)row.findViewById(R.id.tv_item_int);
+			TextView tv_num = (TextView)row.findViewById(R.id.tv_item_num);
+			TextView tv_den = (TextView)row.findViewById(R.id.tv_item_den);
+			TextView tv_sla = (TextView)row.findViewById(R.id.tv_item_sla);
 			TextView tv_name = (TextView)row.findViewById(R.id.tv_item_name);
 			TextView tv_amount = (TextView)row.findViewById(R.id.tv_item_rate);
 			
-			tv_qty.setText(""+items.get(position).units.integer+":"+items.get(position).units.numerator+"/"+items.get(position).units.denominator);
+			tv_int.setText(""+items.get(position).units.integer);
+			tv_num.setText(""+items.get(position).units.numerator);
+			tv_den.setText(""+items.get(position).units.denominator);
+			if (items.get(position).units.integer == 0) {
+				tv_int.setVisibility(View.GONE);
+			}
+			
+			if (items.get(position).units.numerator == 0) {
+				tv_num.setVisibility(View.GONE);
+				tv_den.setVisibility(View.GONE);
+				tv_sla.setVisibility(View.GONE);
+			}
+			
 			tv_name.setText(items.get(position).item_name);
 			tv_amount.setText(PaymentSettings.CURRENCY_SIGN+items.get(position).total_price);
 
