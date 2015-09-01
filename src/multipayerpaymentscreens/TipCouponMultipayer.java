@@ -118,12 +118,18 @@ public class TipCouponMultipayer extends ActionBarActivity {
 				tv_num.setText(""+desc_list.get(ii).units.numerator);
 				tv_den.setText(""+desc_list.get(ii).units.denominator);
 				if (desc_list.get(ii).units.integer == 0) {
-					tv_int.setVisibility(View.INVISIBLE);
+					tv_int.setVisibility(View.GONE);
+				} else {
+					tv_int.setVisibility(View.VISIBLE);
 				}
 				if (desc_list.get(ii).units.numerator == 0) {
 					tv_num.setVisibility(View.GONE);
 					tv_den.setVisibility(View.GONE);
 					tv_sla.setVisibility(View.GONE);
+				} else {
+					tv_num.setVisibility(View.VISIBLE);
+					tv_den.setVisibility(View.VISIBLE);
+					tv_sla.setVisibility(View.VISIBLE);
 				}
 				Button minusBtn = (Button)tr.findViewById(R.id.bt_minus);
 				minusBtn.setOnClickListener(new OnClickListener() {
@@ -174,12 +180,18 @@ public class TipCouponMultipayer extends ActionBarActivity {
 						tv_num.setText(""+desc_list.get(iii).units.numerator);
 						tv_den.setText(""+desc_list.get(iii).units.denominator);
 						if (desc_list.get(iii).units.integer == 0) {
-							tv_int.setVisibility(View.INVISIBLE);
+							tv_int.setVisibility(View.GONE);
+						} else {
+							tv_int.setVisibility(View.VISIBLE);
 						}
 						if (desc_list.get(iii).units.numerator == 0) {
 							tv_num.setVisibility(View.GONE);
 							tv_den.setVisibility(View.GONE);
 							tv_sla.setVisibility(View.GONE);
+						} else {
+							tv_num.setVisibility(View.VISIBLE);
+							tv_den.setVisibility(View.VISIBLE);
+							tv_sla.setVisibility(View.VISIBLE);
 						}
 						
 						if (desc_list.get(iii).units.value() == 0.0) {
@@ -231,12 +243,18 @@ public class TipCouponMultipayer extends ActionBarActivity {
 						tv_num.setText(""+desc_list.get(iii).units.numerator);
 						tv_den.setText(""+desc_list.get(iii).units.denominator);
 						if (desc_list.get(iii).units.integer == 0) {
-							tv_int.setVisibility(View.INVISIBLE);
+							tv_int.setVisibility(View.GONE);
+						} else {
+							tv_int.setVisibility(View.VISIBLE);
 						}
 						if (desc_list.get(iii).units.numerator == 0) {
 							tv_num.setVisibility(View.GONE);
 							tv_den.setVisibility(View.GONE);
 							tv_sla.setVisibility(View.GONE);
+						} else {
+							tv_num.setVisibility(View.VISIBLE);
+							tv_den.setVisibility(View.VISIBLE);
+							tv_sla.setVisibility(View.VISIBLE);
 						}
 
 						billAmount+=adjust;

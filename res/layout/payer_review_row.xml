@@ -78,6 +78,7 @@
             android:layout_alignTop="@+id/bt_text"
             android:layout_toRightOf="@+id/tv_int"
             android:layout_marginTop="11dp"
+            android:layout_marginLeft="5dp"
             android:text="2"
             android:textColor="#fff"
             android:textAppearance="?android:attr/textAppearanceSmall" />
