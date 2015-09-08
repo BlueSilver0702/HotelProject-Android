@@ -1332,7 +1332,7 @@ containing a value of this type.
         public static final int action_menu_divider=0x7f060027;
         public static final int action_menu_presenter=0x7f060028;
         public static final int action_mode_close_button=0x7f060035;
-        public static final int action_settings=0x7f0600ca;
+        public static final int action_settings=0x7f0600cc;
         public static final int activity_chooser_view_content=0x7f060036;
         public static final int alignBounds=0x7f060002;
         public static final int alignMargins=0x7f060003;
@@ -1371,7 +1371,9 @@ containing a value of this type.
         public static final int bt_plus=0x7f0600bc;
         public static final int bt_proceed_card_swipe_screen=0x7f060082;
         public static final int bt_proceed_cash_payment_screen=0x7f060087;
+        public static final int bt_reallocate=0x7f0600c8;
         public static final int bt_retry=0x7f0600ab;
+        public static final int bt_split=0x7f0600c7;
         public static final int bt_text=0x7f060070;
         public static final int bt_tipamountabsolute=0x7f060095;
         public static final int bt_totaldue=0x7f060098;
@@ -1487,12 +1489,13 @@ containing a value of this type.
         public static final int textView3=0x7f060059;
         public static final int textView4=0x7f06005a;
         public static final int textview1=0x7f060055;
-        public static final int tip_rate_10=0x7f0600cc;
-        public static final int tip_rate_15=0x7f0600cd;
-        public static final int tip_rate_20=0x7f0600ce;
-        public static final int tip_rate_25=0x7f0600cf;
-        public static final int tip_rate_30=0x7f0600d0;
-        public static final int tip_rate_5=0x7f0600cb;
+        public static final int tip_rate_0=0x7f0600cd;
+        public static final int tip_rate_10=0x7f0600cf;
+        public static final int tip_rate_15=0x7f0600d0;
+        public static final int tip_rate_20=0x7f0600d1;
+        public static final int tip_rate_25=0x7f0600d2;
+        public static final int tip_rate_30=0x7f0600d3;
+        public static final int tip_rate_5=0x7f0600ce;
         public static final int title=0x7f06003c;
         public static final int title_text=0x7f0600a7;
         public static final int tl_lets_go_dutch_screen=0x7f06004e;
@@ -1520,9 +1523,9 @@ containing a value of this type.
         public static final int tv_pleasepay_cash_payment_screen=0x7f060083;
         public static final int tv_quantityQTY=0x7f0600b1;
         public static final int tv_sla=0x7f0600bf;
-        public static final int tv_snapshot_amount_paid=0x7f0600c8;
-        public static final int tv_snapshot_cash_due_back=0x7f0600c9;
-        public static final int tv_snapshot_signature=0x7f0600c7;
+        public static final int tv_snapshot_amount_paid=0x7f0600ca;
+        public static final int tv_snapshot_cash_due_back=0x7f0600cb;
+        public static final int tv_snapshot_signature=0x7f0600c9;
         public static final int tv_text=0x7f0600c1;
         public static final int tv_totalamount_swipescreen=0x7f060081;
         public static final int tv_whoispaying=0x7f06009f;
@@ -1612,8 +1615,9 @@ containing a value of this type.
         public static final int payer_review_row=0x7f030034;
         public static final int payer_row_who_had_the_lobster=0x7f030035;
         public static final int payer_row_with_concatinate=0x7f030036;
-        public static final int snapshot_screen_row_multipayer=0x7f030037;
-        public static final int support_simple_spinner_dropdown_item=0x7f030038;
+        public static final int review_option=0x7f030037;
+        public static final int snapshot_screen_row_multipayer=0x7f030038;
+        public static final int support_simple_spinner_dropdown_item=0x7f030039;
     }
     public static final class menu {
         public static final int card_snapshot_screen_multi_payer=0x7f0d0000;

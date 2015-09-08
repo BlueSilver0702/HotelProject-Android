@@ -2,6 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item
+        android:id="@+id/tip_rate_0"
+        android:showAsAction="ifRoom|withText"
+        android:title="0%"
+        android:visible="true"/>
+    <item
         android:id="@+id/tip_rate_5"
         android:showAsAction="ifRoom|withText"
         android:title="5%"

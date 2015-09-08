@@ -1,15 +1,22 @@
 package multipayerpaymentscreens;
 
+import java.util.ArrayList;
+
 import payments.PaymentSettings;
 
 import com.example.hotelproject.R;
+
+import databaseutil.DBHelperWhoHadTheLobster;
+import databaseutil.PersonRowDS;
 
 import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,11 +34,18 @@ public class CashPaymentScreenMultipayer extends ActionBarActivity {
 	Bundle extraBundle;
 	TextView tv_amount,tv_dueback;
 	double roundupto,totaldue,dueback,leaving;
+	int order_id;
+	String payer_name;
+	DBHelperWhoHadTheLobster dBHelperWhoHadTheLobster;
 	
 	private void loadData(){   
 		   
 		   extraBundle=getIntent().getBundleExtra("databundle");
 		   totaldue=extraBundle.getDouble("totaldue");
+		   
+		   SharedPreferences sharedPreferences = getSharedPreferences("MyPreferences",Context.MODE_PRIVATE);
+			order_id=sharedPreferences.getInt("order_id",0);                       
+			payer_name=sharedPreferences.getString("payer_name", "");
 		   
 		   bt_proceed=(Button)findViewById(R.id.bt_mp_proceed_cash_payment_screen);
 		   tv_amount=(TextView)findViewById(R.id.tv_mp_pleasepay_cash_payment_screen);
@@ -40,6 +54,8 @@ public class CashPaymentScreenMultipayer extends ActionBarActivity {
 		   et_leaving=(EditText)findViewById(R.id.et_mp_leaving_cash_payment_screen);
 		   
 	       Toast.makeText(this,"Cash payment Screen : "+extraBundle.getDouble("totaldue"), Toast.LENGTH_LONG).show();
+	       
+	       dBHelperWhoHadTheLobster = new DBHelperWhoHadTheLobster(this);
 	   }
 	
 	
@@ -84,6 +100,7 @@ public class CashPaymentScreenMultipayer extends ActionBarActivity {
 		        			tv_dueback.setText("Cash Due Back: "+PaymentSettings.CURRENCY_SIGN + dueback);
 		        		}else{
 		        			dueback=leaving-totaldue;
+		        			dueback = (double) Math.round(dueback * 100) / 100;
 		        			tv_dueback.setText("Cash Due Back: "+PaymentSettings.CURRENCY_SIGN + dueback);
 		        		}
 	            
@@ -118,7 +135,19 @@ public class CashPaymentScreenMultipayer extends ActionBarActivity {
 				// TODO Auto-generated method stub
 				if(leaving<totaldue)
 					showAlertDialogBox();
-				else{
+				else {
+					ArrayList<PersonRowDS> array_list=dBHelperWhoHadTheLobster.getAllPersons(order_id);
+					dBHelperWhoHadTheLobster.deleteData(order_id);
+					for (int i=0; i<array_list.size(); i++) {
+						if (array_list.get(i).PERSON_NAME.equals(payer_name)) {
+							array_list.get(i).PAID_AMOUNT = totaldue;
+						}
+						dBHelperWhoHadTheLobster.insertData(order_id, array_list.get(i).PERSON_NAME,array_list.get(i).PAID, array_list.get(i).PAID_AMOUNT);
+					}
+					
+					
+					
+					
 					Bundle bundle = new Bundle();
 	            	extraBundle.putDouble("cash_due_back",dueback);
 	        		bundle.putBundle("databundle",extraBundle);
@@ -131,8 +160,7 @@ public class CashPaymentScreenMultipayer extends ActionBarActivity {
 		});
 		
 	}
-		
-	
+
 	private void showAlertDialogBox(){
 			final AlertDialog.Builder alertDialog = new AlertDialog.Builder(CashPaymentScreenMultipayer.this);
 	     alertDialog.setTitle("Error");

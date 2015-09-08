@@ -259,8 +259,13 @@ public class SignatureScreenMultiPayer extends ActionBarActivity {
 	}
 	
 	private void startWhoHadTheLobsterActivity(){
+		Bundle extrabundle = new Bundle();				
+		extrabundle.putBoolean("review", false);
+		Bundle bundle =new Bundle();
+		bundle.putBundle("databundle", extrabundle);
 		Intent myIntent = new Intent(SignatureScreenMultiPayer.this,WhoHadTheLobster.class);
 		myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		myIntent.putExtras(bundle);
 		startActivity( myIntent);
 	}
 	

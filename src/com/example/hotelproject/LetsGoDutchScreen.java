@@ -324,6 +324,10 @@ public class LetsGoDutchScreen extends ActionBarActivity {
 												    ImageView tiv=(ImageView)tableRows.get(payer_remove_index-1).findViewById(R.id.iv_concatinate);
 												    tiv.setVisibility(TRIM_MEMORY_UI_HIDDEN);
 											}
+											
+											payers_name[i] = payers_name[i] + " & " + (payer_remove_index+1);
+											bt_temp_payer.setText(payers_name[i]);
+											
 											table_layout.removeViewAt(payer_remove_index);	
 											tableRows.remove(payer_remove_index);
 											

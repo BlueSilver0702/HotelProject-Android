@@ -53,6 +53,8 @@ public class WhoHadTheLobster extends ActionBarActivity {
 	TableLayout table_layout;
 	ArrayList<TableRow> tableRows;
 	
+	boolean reviewPage;
+	
 	boolean payers_paid[];
 	String[] payers_name;
 	boolean payers_hilight[];
@@ -109,6 +111,10 @@ public class WhoHadTheLobster extends ActionBarActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		Bundle extraBundle;
+		extraBundle=getIntent().getBundleExtra("databundle");
+		reviewPage=extraBundle.getBoolean("review");
+		
 		setContentView(R.layout.activity_who_had_the_lobster);
 		myView =new MyView(this);
 		loadInitialData();
@@ -132,14 +138,37 @@ public class WhoHadTheLobster extends ActionBarActivity {
 		}
 	   else if(!dBHelperWhoHadTheLobster.isAnyOnePaid(order_id))
 	    {
-		    dBHelperFraction.isAnyOnePaid(order_id);
-		    order_id=handleServerDataTable.getOrderId();
-		    
-		    adapter = new MyListAdapter(WhoHadTheLobster.this, R.layout.food_items_row, all_items);
-		    billListView = (ListView)findViewById(R.id.lv_item_table_who_had_the_lobster);
-		    billListView.setAdapter(adapter);		    
-		    loadData();
-		    prepareScreen();
+		    ArrayList<ItemDescDS> n_all_items=new ArrayList<ItemDescDS>();
+	    	ArrayList<FractionRowDS> fraction_list = dBHelperFraction.getAllPersons(order_id);
+			for (int k=0; k<fraction_list.size(); k++) {
+				FractionRowDS fractionItem = fraction_list.get(k);
+			    if (fractionItem.person_name.equals("empty")) {
+				  ItemDescDS descObj = new ItemDescDS();
+				  descObj.item_name = fractionItem.item_name;
+				  descObj.price_per_unit = fractionItem.price;
+				  descObj.units = new Fraction(fractionItem.units, fractionItem.f_up, fractionItem.f_down);
+				  descObj.total_price=descObj.units.value()*descObj.price_per_unit;
+				  descObj.total_price=(double) Math.round(descObj.total_price * 100) / 100;
+				  n_all_items.add(descObj);
+			    }
+		    }
+			
+			if (n_all_items.size() > 0 && reviewPage) {
+				adapter = new MyListAdapter(WhoHadTheLobster.this, R.layout.food_items_row, n_all_items);
+		    	billListView = (ListView)findViewById(R.id.lv_item_table_who_had_the_lobster);
+			    billListView.setAdapter(adapter);	
+		    	loadData();
+			    prepareScreen();
+			} else {
+				dBHelperFraction.isAnyOnePaid(order_id);
+			    order_id=handleServerDataTable.getOrderId();
+			    
+			    adapter = new MyListAdapter(WhoHadTheLobster.this, R.layout.food_items_row, all_items);
+			    billListView = (ListView)findViewById(R.id.lv_item_table_who_had_the_lobster);
+			    billListView.setAdapter(adapter);		    
+			    loadData();
+			    prepareScreen();
+			}
 		    
 		    System.out.println("==========++++++++3");
 	    }else{
@@ -175,22 +204,37 @@ public class WhoHadTheLobster extends ActionBarActivity {
 		payers_paid = new boolean[no_of_payers];
 		   if (dBHelperWhoHadTheLobster.isThereAnyRecord(order_id)) {
 			   if(!dBHelperWhoHadTheLobster.isAnyOnePaid(order_id)){
-				   dBHelperWhoHadTheLobster.deleteData(order_id);
-				   dBHelperFraction.deleteData(order_id);
-
-			    	
-		    		payers_paid=new boolean[no_of_payers];
-		    		payers_name=new String[no_of_payers];
-		    		payers_payment_due=new double[no_of_payers];
-		    		payers_delete_bool = new boolean[no_of_payers];
-		    		payers_hilight=new boolean[no_of_payers];
-	    			for(int i=0;i<no_of_payers;i++){
-		    			  payers_paid[i]=false;
-		    			  payers_name[i]="Payer "+(i+1);
-		    			  payers_payment_due[i]=0;
-		    			  payers_hilight[i]=false;
-		    			  dBHelperWhoHadTheLobster.insertData(order_id, payers_name[i],false, payers_payment_due[i]);
-		    		  }
+				   if (!reviewPage) {
+					   dBHelperWhoHadTheLobster.deleteData(order_id);
+					   dBHelperFraction.deleteData(order_id);
+					   payers_paid=new boolean[no_of_payers];
+			    		payers_name=new String[no_of_payers];
+			    		payers_payment_due=new double[no_of_payers];
+			    		payers_delete_bool = new boolean[no_of_payers];
+			    		payers_hilight=new boolean[no_of_payers];
+		    			for(int i=0;i<no_of_payers;i++){
+			    			  payers_paid[i]=false;
+			    			  payers_name[i]="Payer "+(i+1);
+			    			  payers_payment_due[i]=0;
+			    			  payers_hilight[i]=false;
+			    			  dBHelperWhoHadTheLobster.insertData(order_id, payers_name[i],false, payers_payment_due[i]);
+			    		}
+				   } else {
+					   no_of_payers=dBHelperWhoHadTheLobster.getNoPayers(order_id);
+						payers_paid=new boolean[no_of_payers];
+						payers_name=new String[no_of_payers];
+						payers_payment_due=new double[no_of_payers];
+						payers_delete_bool = new boolean[no_of_payers];
+						payers_hilight=new boolean[no_of_payers];
+			    		
+			    		ArrayList<PersonRowDS> array_list=dBHelperWhoHadTheLobster.getAllPersons(order_id);
+						  for(int i=0;i<no_of_payers;i++){
+							  payers_paid[i]=array_list.get(i).PAID;
+							  payers_name[i]=array_list.get(i).PERSON_NAME;
+							  payers_payment_due[i]=array_list.get(i).PAID_AMOUNT;
+							  payers_hilight[i]=false;
+						  }
+				   }
 			   }else{
 					no_of_payers=dBHelperWhoHadTheLobster.getNoPayers(order_id);
 					payers_paid=new boolean[no_of_payers];
@@ -201,7 +245,6 @@ public class WhoHadTheLobster extends ActionBarActivity {
 		    		
 		    		ArrayList<PersonRowDS> array_list=dBHelperWhoHadTheLobster.getAllPersons(order_id);
 					  for(int i=0;i<no_of_payers;i++){
-						//  System.out.println(">>>>>>>>>>>>>>>>>>"+array_list.get(i).PAID  + array_list.get(i).PERSON_NAME + array_list.get(i).PAID_AMOUNT);
 						  payers_paid[i]=array_list.get(i).PAID;
 						  payers_name[i]=array_list.get(i).PERSON_NAME;
 						  payers_payment_due[i]=array_list.get(i).PAID_AMOUNT;
@@ -234,10 +277,10 @@ public class WhoHadTheLobster extends ActionBarActivity {
 		   }
 		  
 		   if (dBHelperWhoHadTheLobster.isThereAnyRecord(order_id)) {
-			   if(dBHelperWhoHadTheLobster.isAnyOnePaid(order_id)){
+//			   if(dBHelperWhoHadTheLobster.isAnyOnePaid(order_id)){
 				   
 				   ArrayList<FractionRowDS> fraction_list = dBHelperFraction.getAllPersons(order_id);
-				   for (int j=0; j<no_of_payers; j++) {
+				   for (int j=0; j<no_of_payers; j++) { 
 					  for (int k=0; k<fraction_list.size(); k++) {
 						  FractionRowDS fractionItem = fraction_list.get(k);
 						  if (payers_order.get(j).payer_name.equals(fractionItem.person_name)) {
@@ -250,7 +293,7 @@ public class WhoHadTheLobster extends ActionBarActivity {
 					  }
 				
 				   }
-			   }
+//			   }
 		   }else{ 
 			   
 		   }
@@ -273,7 +316,7 @@ public class WhoHadTheLobster extends ActionBarActivity {
 
 			if(payers_paid[i]==true) {
 				tempb.setEnabled(false);
-				tempb.setBackgroundResource(R.drawable.button_flat_disable_grey);
+				tempb.setBackgroundResource(R.drawable.button_flat_red_normal);
 			}
 			
 			tableRows.add(tr);
@@ -291,6 +334,8 @@ private void setUpButton(final Button tempb,final String payer_name) {
 			@Override
 			public void onClick(View v) {
 
+				Log.v("My Log" ,"Drop right XianA!!!!!!!!!");
+				
 				if(billListView.getAdapter().getCount()==0){
 					TextView temptv=null;
 				    for(int i=0;i<tableRows.size();i++){
@@ -376,6 +421,8 @@ private void setUpButton(final Button tempb,final String payer_name) {
 				ClipData data = ClipData.newPlainText("DRAG", "");
 		        View.DragShadowBuilder shadow = new View.DragShadowBuilder(v);
 	 	        v.startDrag(data, shadow, null, 0);
+	 	        
+	 	       Log.v("My Log" ,"Long Touch XianA!!!!!!!!!");
 		        
 		        for(int i=0;i<tableRows.size();i++){
 		        	Button bt_temp=(Button)tableRows.get(i).findViewById(R.id.bt_payer_name_who_had_the_lobster);
@@ -407,6 +454,8 @@ private void setUpButton(final Button tempb,final String payer_name) {
 		            case DragEvent.ACTION_DROP:{
 
 		            	if (payer_remove_index == -1) {
+		            		
+		            	Log.v("My Log" ,"Drop right XianA!!!!!!!!!");
 			    		for(int i=0;i<no_of_payers;i++){
 				    		 if(tempb.getText().toString().equals(payers_name[i]))
 				    		 {
@@ -468,12 +517,16 @@ private void setUpButton(final Button tempb,final String payer_name) {
 		            	} else {
 			    		/////
 		            	System.out.println("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< : button");
+		            	
+		            	Log.v("My Log" ,"Drop left XianA!!!!!!!!!");
+		            	
 			    		for(int i=0;i<tableRows.size();i++){
 							Button bt_temp_payer=(Button)tableRows.get(i).findViewById(R.id.bt_payer_name_who_had_the_lobster);
 							
 							if(bt_temp_payer.equals(v)  )
 								{
 										TextView tempet=(TextView)tableRows.get(i).findViewById(R.id.tv_payer_amount_who_had_the_lobster);
+										TextView tempname=(TextView)tableRows.get(i).findViewById(R.id.bt_payer_name_who_had_the_lobster);
 										TextView tempet2=(TextView)tableRows.get(payer_remove_index).findViewById(R.id.tv_payer_amount_who_had_the_lobster);
 										Double personamountnext=Double.parseDouble(tempet2.getText().toString().replace(PaymentSettings.CURRENCY_SIGN,""));
 										
@@ -483,7 +536,7 @@ private void setUpButton(final Button tempb,final String payer_name) {
 										payers_payment_due[payer_remove_index] = 0;
 										payers_delete_bool[payer_remove_index] = true;
 										payers_payment_due[i] = payers_payment_due[i] + personamount;
-										//System.out.println("Size : " + tableRows.size() + "  Index "+ i);
+										//System.out.println("Size : " + tableRows.size() + "  Index "+ i);										
 										
 										for (int i1=0;i1<no_of_payers;i1++) {
 											if (payers_name[i1].equals(payers_order.get(i1).payer_name)) {
@@ -504,12 +557,15 @@ private void setUpButton(final Button tempb,final String payer_name) {
 											}
 										}
 										
-						    			ItemDescDS newItem = new ItemDescDS();
-						    			newItem.item_name      = adapter.getItem(drop_item_remove_index).item_name;
-						    			newItem.price_per_unit = adapter.getItem(drop_item_remove_index).price_per_unit;
-						    			newItem.total_price    = (double) Math.round(newItem.total_price + adapter.getItem(drop_item_remove_index).price_per_unit*100) /100;
-						    			newItem.units.integer = 1;
-						    			payers_order.get(i).all_items.add(newItem);
+//						    			ItemDescDS newItem = new ItemDescDS();
+//						    			newItem.item_name      = adapter.getItem(drop_item_remove_index).item_name;
+//						    			newItem.price_per_unit = adapter.getItem(drop_item_remove_index).price_per_unit;
+//						    			newItem.total_price    = (double) Math.round(newItem.total_price + adapter.getItem(drop_item_remove_index).price_per_unit*100) /100;
+//						    			newItem.units.integer = 1;
+//						    			payers_order.get(i).all_items.add(newItem);
+						    			
+						    			payers_name[i] = payers_name[i] + " & " + (payer_remove_index+1);
+						    			tempname.setText(payers_name[i]);
 						    			
 										table_layout.removeViewAt(payer_remove_index);	
 										tableRows.remove(payer_remove_index);
@@ -628,6 +684,8 @@ private void setUpButton(final Button tempb,final String payer_name) {
 		    		rl_tempFoodRow=(RelativeLayout) v.findViewById(R.id.rl_food_items_row);
 					rlBackground=rl_tempFoodRow.getBackground();
 					
+					Log.v("My Log" ,"Single Tap XianA!!!!!!!!!");
+					
 					 drop_item_remove_index=tempposition;
 					 boolean dragornot=true;
 			    	  for(int i=0;i<no_of_payers;i++){
@@ -723,6 +781,7 @@ private void setUpButton(final Button tempb,final String payer_name) {
 				tv_sla.setVisibility(View.GONE);
 			}
 			tv_name.setText(items.get(position).item_name);
+			items.get(position).total_price = (double) Math.round(items.get(position).total_price * 100) / 100;
 			tv_amount.setText(PaymentSettings.CURRENCY_SIGN+items.get(position).total_price);
 
 			return row;
@@ -766,7 +825,7 @@ private void setUpButton(final Button tempb,final String payer_name) {
 				// TODO Auto-generated method stub
 				// xian
 				payer_remove_index = -1;
-				Log.v("My Log" ,"Double Tap");
+				Log.v("My Log" ,"Double Tap XianA!!!!!!!!!");
 				rl_tempFoodRow.setBackgroundColor(Color.GREEN);
 				
 				for (int i1=0;i1<no_of_payers;i1++) {

@@ -6,11 +6,17 @@ import payments.PaymentSettings;
 import serverutil.Fraction;
 import serverutil.HandleCoupons;
 import serverutil.ItemDescDS;
+import singlepayerpaymentscreens.TipCoupon;
 
+import com.example.hotelproject.LetsGoDutchScreen;
 import com.example.hotelproject.R;
+import com.example.hotelproject.WhoHadTheLobster;
+import com.example.hotelproject.Whoispaying;
 
 import databaseutil.DBHelperFraction;
+import databaseutil.DBHelperWhoHadTheLobster;
 import databaseutil.FractionRowDS;
+import databaseutil.PersonRowDS;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.PopupMenu.OnMenuItemClickListener;
@@ -21,11 +27,13 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
@@ -49,6 +57,7 @@ public class TipCouponMultipayer extends ActionBarActivity {
 	String who_is_paying;
 	TableLayout table_layout;
 	DBHelperFraction dBHelperFraction;
+	DBHelperWhoHadTheLobster dBHelperWhoHadTheLobster;
 	ArrayList<FractionRowDS> fraction_list;
 	ArrayList<ItemDescDS> desc_list;
 	ArrayList<ItemDescDS> empty_list;
@@ -77,6 +86,7 @@ public class TipCouponMultipayer extends ActionBarActivity {
 
 		   if (!who_is_paying.equals("who_had_the_lobster")) return;
 		   dBHelperFraction = new DBHelperFraction(this);
+		   dBHelperWhoHadTheLobster = new DBHelperWhoHadTheLobster(this);
 		   fraction_list = dBHelperFraction.getAllPersons(order_id);
 		   desc_list = new ArrayList<ItemDescDS>();
 		   empty_list = new ArrayList<ItemDescDS>();
@@ -113,7 +123,7 @@ public class TipCouponMultipayer extends ActionBarActivity {
 				
 				double currency_val = desc_list.get(ii).price_per_unit*leftVal;
 				double rounded = (double)Math.round(currency_val*100)/100;
-				tv_text.setText("Btl. "+desc_list.get(ii).item_name+" "+PaymentSettings.CURRENCY_SIGN+rounded);
+				tv_text.setText("  "+desc_list.get(ii).item_name+" "+PaymentSettings.CURRENCY_SIGN+rounded);
 				tv_int.setText(""+desc_list.get(ii).units.integer);
 				tv_num.setText(""+desc_list.get(ii).units.numerator);
 				tv_den.setText(""+desc_list.get(ii).units.denominator);
@@ -175,7 +185,7 @@ public class TipCouponMultipayer extends ActionBarActivity {
 						double currency_val1 = desc_list.get(iii).price_per_unit*leftVal1;
 						double rounded1 = (double)Math.round(currency_val1*100)/100;
 						
-						tv_text.setText("Btl. "+desc_list.get(iii).item_name+" "+PaymentSettings.CURRENCY_SIGN+rounded1);
+						tv_text.setText("  "+desc_list.get(iii).item_name+" "+PaymentSettings.CURRENCY_SIGN+rounded1);
 						tv_int.setText(""+desc_list.get(iii).units.integer);
 						tv_num.setText(""+desc_list.get(iii).units.numerator);
 						tv_den.setText(""+desc_list.get(iii).units.denominator);
@@ -238,7 +248,7 @@ public class TipCouponMultipayer extends ActionBarActivity {
 						double rounded1 = (double)Math.round(currency_val1*100)/100;
 						
 //						textBtn.setText(desc_list.get(iii).units.integer+":"+desc_list.get(iii).units.numerator+"/"+desc_list.get(iii).units.denominator+" "+desc_list.get(iii).item_name+" "+PaymentSettings.CURRENCY_SIGN+rounded1);
-						tv_text.setText("Btl. "+desc_list.get(iii).item_name+" "+PaymentSettings.CURRENCY_SIGN+rounded1);
+						tv_text.setText("  "+desc_list.get(iii).item_name+" "+PaymentSettings.CURRENCY_SIGN+rounded1);
 						tv_int.setText(""+desc_list.get(iii).units.integer);
 						tv_num.setText(""+desc_list.get(iii).units.numerator);
 						tv_den.setText(""+desc_list.get(iii).units.denominator);
@@ -304,6 +314,10 @@ public class TipCouponMultipayer extends ActionBarActivity {
 						////////////////////////////
 						
 									switch (arg0.getItemId()) {
+									case R.id.tip_rate_0:
+										totaldue=(billAmount-discount_amount);
+										setAmountTipButtonsText(totaldue,0);
+										break;
 									case R.id.tip_rate_5:
 										tipAmount=(billAmount*5)/100;
 										totaldue=(billAmount+tipAmount-discount_amount);
@@ -328,6 +342,11 @@ public class TipCouponMultipayer extends ActionBarActivity {
 										tipAmount=(billAmount*25)/100;
 										totaldue=(billAmount+tipAmount-discount_amount);
 										setAmountTipButtonsText(totaldue,25);
+										break;
+									case R.id.tip_rate_30:
+										tipAmount=(billAmount*30)/100;
+										totaldue=(billAmount+tipAmount-discount_amount);
+										setAmountTipButtonsText(totaldue,30);
 										break;
 									}
 									
@@ -474,18 +493,220 @@ public class TipCouponMultipayer extends ActionBarActivity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				ArrayList<FractionRowDS> fraction_list = dBHelperFraction.getAllPersons(order_id);
-				dBHelperFraction.deleteEmptyData(order_id);
-				ArrayList<FractionRowDS> fraction_list1 = dBHelperFraction.getAllPersons(order_id);
-				for(int k=0;k<empty_list.size();k++){	
+				
+				
+//				ArrayList<FractionRowDS> fraction_list2 = dBHelperFraction.getAllPersons(order_id);
+//				System.out.println(""+fraction_list.size()+":"+fraction_list1.size()+":"+fraction_list2.size());
+
+				if (empty_list.size() > 0) {
+					showReviewOptionDailogBox();
+				} else {
+					ArrayList<FractionRowDS> fraction_list = dBHelperFraction.getAllPersons(order_id);
+					dBHelperFraction.deleteEmptyData(order_id);
+					ArrayList<FractionRowDS> fraction_list1 = dBHelperFraction.getAllPersons(order_id);
+					for(int k=0;k<empty_list.size();k++){	
+			    		ItemDescDS itemObj = empty_list.get(k);
+			    		if (itemObj.units.value() > 0)
+			    			dBHelperFraction.insertData(order_id, "empty", itemObj.item_name, itemObj.price_per_unit, itemObj.units.integer, itemObj.units.numerator, itemObj.units.denominator);
+			    	}
+					Bundle extrabundle = new Bundle();				
+					extrabundle.putDouble("totaldue",totaldue);
+					extrabundle.putInt("order_id", order_id);
+					extrabundle.putDouble("discount",discount_amount);
+					extrabundle.putString("payer_name",payer_name);
+					extrabundle.putString("who_is_paying", who_is_paying);
+					
+					SharedPreferences sharedPreferences = getSharedPreferences("MyPreferences",Context.MODE_PRIVATE);
+            		SharedPreferences.Editor editor = sharedPreferences.edit();
+//            	    editor.clear();
+            	    editor.putString("totaldue",""+totaldue);
+            	    editor.putInt("order_id", order_id);
+            	    editor.putString("payer_name", payer_name);
+            	    
+            	    editor.commit();
+            	    
+					Bundle bundle =new Bundle();
+					bundle.putBundle("databundle", extrabundle);
+					Intent myIntent = new Intent(TipCouponMultipayer.this, RecieptScreenMultiPayer.class);
+					
+					myIntent.putExtras(bundle);
+					startActivity( myIntent);
+				}
+			}
+		});
+		
+	}
+	
+	private void showReviewOptionDailogBox(){
+		
+		final Dialog dialog =new Dialog(context);
+		 
+        //tell the Dialog to use the dialog.xml as it's layout description
+		dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.review_option);
+    //    String title="Total: "+ PaymentSettings.CURRENCY_SIGN+totalbillAmount;
+
+        Button bt_reallocate = (Button) dialog.findViewById(R.id.bt_reallocate);
+        Button bt_split = (Button) dialog.findViewById(R.id.bt_split);
+        
+        bt_reallocate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                
+                ArrayList<PersonRowDS> array_list=dBHelperWhoHadTheLobster.getAllPersons(order_id);
+                ArrayList<PersonRowDS> new_list = new ArrayList<PersonRowDS>();
+                for(int j=0;j<array_list.size();j++) {
+                	if (!array_list.get(j).PAID) {
+                		new_list.add(array_list.get(j));
+                	}
+                }
+                if (new_list.size() <= 1) return;
+                for(int i=0;i<empty_list.size();i++) {
+                	ItemDescDS emp_item = empty_list.get(i);
+	                for(int k=0;k<new_list.size();k++) {
+	                	if (new_list.get(k).PERSON_NAME.equals(payer_name)) {
+	                		new_list.get(k).PAID_AMOUNT-=emp_item.price_per_unit*emp_item.units.value();
+	                	}
+	                	new_list.get(k).PAID_AMOUNT = (double) Math.round(new_list.get(k).PAID_AMOUNT*100) /100;
+	                }
+                }
+			   
+                for (int jj=0;jj<empty_list.size();jj++) {
+                	for (int kk=0;kk<fraction_list.size();kk++) {                		
+            			if (fraction_list.get(kk).person_name.equals(payer_name) && fraction_list.get(kk).item_name.equals(empty_list.get(jj).item_name)) {
+            				double value = fraction_list.get(kk).units+(double)fraction_list.get(kk).f_up/(double)fraction_list.get(kk).f_down;
+            				if (empty_list.get(jj).units.value() == value) {
+            					fraction_list.remove(kk);
+            				} else {
+            					Fraction n_fraction = new Fraction(fraction_list.get(kk).units, fraction_list.get(kk).f_up, fraction_list.get(kk).f_down);
+            					Fraction ret_fraction = n_fraction.minusN(empty_list.get(jj).units);
+            					fraction_list.get(kk).units = ret_fraction.integer;
+            					fraction_list.get(kk).f_up = ret_fraction.numerator;
+            					fraction_list.get(kk).f_down = ret_fraction.denominator;
+            				}
+            			}
+            		}
+                }
+                
+                dBHelperWhoHadTheLobster.deleteDataNoPaid(order_id);
+		    	for(int a=0;a<new_list.size();a++){
+		    		dBHelperWhoHadTheLobster.insertData(order_id, new_list.get(a).PERSON_NAME,false,new_list.get(a).PAID_AMOUNT);
+		    	}
+		    	
+		    	dBHelperFraction.deleteData(order_id);
+    			for (int jjj=0; jjj<fraction_list.size(); jjj++) {
+    				FractionRowDS fractionItem = fraction_list.get(jjj);
+//    				if (!fractionItem.person_name.equals("empty"))
+    					dBHelperFraction.insertData(order_id, fractionItem.person_name, fractionItem.item_name, fractionItem.price, fractionItem.units, fractionItem.f_up, fractionItem.f_down);
+    			}
+        	    
+    			for(int k=0;k<empty_list.size();k++){	
 		    		ItemDescDS itemObj = empty_list.get(k);
 		    		if (itemObj.units.value() > 0)
 		    			dBHelperFraction.insertData(order_id, "empty", itemObj.item_name, itemObj.price_per_unit, itemObj.units.integer, itemObj.units.numerator, itemObj.units.denominator);
 		    	}
-				ArrayList<FractionRowDS> fraction_list2 = dBHelperFraction.getAllPersons(order_id);
-				System.out.println(""+fraction_list.size()+":"+fraction_list1.size()+":"+fraction_list2.size());
-				Bundle extrabundle = new Bundle();
-				
+    			
+    			Bundle extrabundle = new Bundle();				
+				extrabundle.putBoolean("review", true);
+				Bundle bundle =new Bundle();
+				bundle.putBundle("databundle", extrabundle);
+	    	    Intent myIntent = new Intent(TipCouponMultipayer.this, WhoHadTheLobster.class);
+	    	    myIntent.putExtras(bundle);
+		        startActivity( myIntent);
+            }
+        });
+        
+        bt_split.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+
+                ArrayList<PersonRowDS> array_list=dBHelperWhoHadTheLobster.getAllPersons(order_id);
+                ArrayList<PersonRowDS> new_list = new ArrayList<PersonRowDS>();
+                for(int j=0;j<array_list.size();j++) {
+                	if (!array_list.get(j).PAID) {
+                		new_list.add(array_list.get(j));
+                	}
+                }
+                if (new_list.size() <= 1) return;
+                for(int i=0;i<empty_list.size();i++) {
+                	ItemDescDS emp_item = empty_list.get(i);
+	                for(int k=0;k<new_list.size();k++) {
+	                	if (!new_list.get(k).PERSON_NAME.equals(payer_name)) {
+	                		double add_value = emp_item.price_per_unit*emp_item.units.value()/(new_list.size()-1);
+	                		new_list.get(k).PAID_AMOUNT+=add_value;
+	                	} else {
+	                		new_list.get(k).PAID_AMOUNT-=emp_item.price_per_unit*emp_item.units.value();
+	                	}
+	                	new_list.get(k).PAID_AMOUNT = (double) Math.round(new_list.get(k).PAID_AMOUNT*100) /100;
+	                }
+                }
+			   
+                for (int jj=0;jj<empty_list.size();jj++) {
+                	for (int kk=0;kk<fraction_list.size();kk++) {                		
+            			if (fraction_list.get(kk).person_name.equals(payer_name) && fraction_list.get(kk).item_name.equals(empty_list.get(jj).item_name)) {
+            				double value = fraction_list.get(kk).units+(double)fraction_list.get(kk).f_up/(double)fraction_list.get(kk).f_down;
+            				if (empty_list.get(jj).units.value() == value) {
+            					fraction_list.remove(kk);
+            				} else {
+            					Fraction n_fraction = new Fraction(fraction_list.get(kk).units, fraction_list.get(kk).f_up, fraction_list.get(kk).f_down);
+            					Fraction ret_fraction = n_fraction.minusN(empty_list.get(jj).units);
+            					fraction_list.get(kk).units = ret_fraction.integer;
+            					fraction_list.get(kk).f_up = ret_fraction.numerator;
+            					fraction_list.get(kk).f_down = ret_fraction.denominator;
+            				}
+            			}
+            		}
+                	for (int iii=0;iii<new_list.size();iii++) {
+                		if (new_list.get(iii).PERSON_NAME.equals(payer_name)) {
+                			continue;
+                		}
+                		ArrayList<FractionRowDS> tmp_list = new ArrayList<FractionRowDS>();
+                		for (int kk=0;kk<fraction_list.size();kk++) {                		
+                			if (fraction_list.get(kk).person_name.equals(new_list.get(iii).PERSON_NAME)) {
+                				tmp_list.add(fraction_list.get(kk));
+                			}
+                		}
+                		boolean isReviewed = false;
+                		for (int ii=0;ii<tmp_list.size();ii++) {
+                			if (tmp_list.get(ii).item_name.equals(empty_list.get(jj).item_name)) {
+                				isReviewed = true;
+                				Fraction tmp_fraction = new Fraction(tmp_list.get(ii).units, tmp_list.get(ii).f_up, tmp_list.get(ii).f_down);
+                				Fraction tmp_result = tmp_fraction.plusN(empty_list.get(jj).units.divideM(new_list.size()-1));
+                				tmp_list.get(ii).units = tmp_result.integer;
+                				tmp_list.get(ii).f_up = tmp_result.numerator;
+                				tmp_list.get(ii).f_down = tmp_result.denominator;
+                			}
+                		}
+                		if (!isReviewed) {
+     					    FractionRowDS newItem = new FractionRowDS();
+     					    newItem.order_id = order_id;
+     					    newItem.person_name = new_list.get(iii).PERSON_NAME;
+     					    newItem.price = empty_list.get(jj).price_per_unit;
+     					    newItem.item_name = empty_list.get(jj).item_name;
+     					    Fraction fraction = empty_list.get(jj).units.divideM(new_list.size()-1);
+     					    newItem.units = fraction.integer;
+     					    newItem.f_down = fraction.denominator;
+     					    newItem.f_up = fraction.numerator;
+     					    fraction_list.add(newItem);
+     				   }
+                	}
+                }
+                
+                dBHelperWhoHadTheLobster.deleteDataNoPaid(order_id);
+		    	for(int a=0;a<new_list.size();a++){
+		    		dBHelperWhoHadTheLobster.insertData(order_id, new_list.get(a).PERSON_NAME,false,new_list.get(a).PAID_AMOUNT);
+		    	}
+		    	
+		    	dBHelperFraction.deleteData(order_id);
+    			for (int jjj=0; jjj<fraction_list.size(); jjj++) {
+    				FractionRowDS fractionItem = fraction_list.get(jjj);
+    				if (!fractionItem.person_name.equals("empty"))
+    					dBHelperFraction.insertData(order_id, fractionItem.person_name, fractionItem.item_name, fractionItem.price, fractionItem.units, fractionItem.f_up, fractionItem.f_down);
+    			}
+		    	
+                Bundle extrabundle = new Bundle();				
 				extrabundle.putDouble("totaldue",totaldue);
 				extrabundle.putInt("order_id", order_id);
 				extrabundle.putDouble("discount",discount_amount);
@@ -497,9 +718,10 @@ public class TipCouponMultipayer extends ActionBarActivity {
 				
 				myIntent.putExtras(bundle);
 				startActivity( myIntent);
-			}
-		});
-		
+            }
+        });
+
+        dialog.show();
 	}
 
 	public void setAmountTipButtonsText(double totaldue,int tip){

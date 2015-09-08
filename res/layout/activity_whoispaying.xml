@@ -18,7 +18,7 @@
             android:layout_marginTop="50dp"
             android:background="@drawable/custom_btn_green"
             android:layout_marginLeft="20dp"
-            android:text="Its on me" />
+            android:text="It&apos;s on me !" />
         
           <Button
             android:id="@+id/bt_letsgoductch"
@@ -31,7 +31,7 @@
             
             android:background="@drawable/custom_btn_orange"
             android:layout_marginLeft="20dp"
-            android:text="Lets go Dutch" />
+            android:text="Let&apos;s go Dutch" />
           
            <Button
             android:id="@+id/bt_whohadthelobster"

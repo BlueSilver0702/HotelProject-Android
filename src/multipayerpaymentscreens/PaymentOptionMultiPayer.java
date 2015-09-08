@@ -72,7 +72,7 @@ public class PaymentOptionMultiPayer extends ActionBarActivity {
 	ImageView iv_creditdebit,iv_cash,iv_paypal,iv_mobilepay,iv_giftcard,iv_blankpay;
 	double totaldue;
 	
-	private void LoadData(){   
+	private void LoadData() {
 		   extraBundle=getIntent().getBundleExtra("databundle");
 		   totaldue=extraBundle.getDouble("totaldue");
 		   paymentHandler=new PaymentHandler();

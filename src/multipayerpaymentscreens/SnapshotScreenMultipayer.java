@@ -83,7 +83,7 @@ public class SnapshotScreenMultipayer extends ActionBarActivity {
   			  TableRow tr=(TableRow)LayoutInflater.from(SnapshotScreenMultipayer.this).inflate(R.layout.snapshot_screen_row_multipayer, null);
   			  
   			  tv_signature=(TextView)tr.findViewById(R.id.tv_snapshot_signature);
-  			  tv_signature.setText(array_list.get(i).PERSON_NAME+" & " + array_list.get(i).SIGNATURE);
+  			  tv_signature.setText(array_list.get(i).PERSON_NAME+" - " + array_list.get(i).SIGNATURE);
   			  
   			  tv_amount_paid=(TextView)tr.findViewById(R.id.tv_snapshot_amount_paid);
   			  tv_amount_paid.setText(PaymentSettings.CURRENCY_SIGN+ array_list.get(i).PAID_AMOUNT);
@@ -126,7 +126,7 @@ public class SnapshotScreenMultipayer extends ActionBarActivity {
   			  TableRow tr=(TableRow)LayoutInflater.from(SnapshotScreenMultipayer.this).inflate(R.layout.snapshot_screen_row_multipayer, null);
   			  
   			  tv_signature=(TextView)tr.findViewById(R.id.tv_snapshot_signature);
-  			  tv_signature.setText(array_list.get(i).PERSON_NAME+" & " + array_list.get(i).SIGNATURE);
+  			  tv_signature.setText(array_list.get(i).PERSON_NAME+" - " + array_list.get(i).SIGNATURE);
   			  
   			  tv_amount_paid=(TextView)tr.findViewById(R.id.tv_snapshot_amount_paid);
   			  tv_amount_paid.setText(PaymentSettings.CURRENCY_SIGN+ array_list.get(i).PAID_AMOUNT);

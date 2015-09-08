@@ -267,8 +267,13 @@ public class Whoispaying extends ActionBarActivity {
 						                	    editor.putInt("no_of_payers", 0);
 						                	    editor.putInt("table_no",tableno);
 						                	    editor.commit();
-						                		Intent myIntent = new Intent(Whoispaying.this, WhoHadTheLobster.class);
-						                		startActivity( myIntent);
+						                	    Bundle extrabundle = new Bundle();				
+					            				extrabundle.putBoolean("review", false);
+					            				Bundle bundle =new Bundle();
+					            				bundle.putBundle("databundle", extrabundle);
+				                	    	   Intent myIntent = new Intent(Whoispaying.this, WhoHadTheLobster.class);
+				                	    	   myIntent.putExtras(bundle);
+				                		       startActivity( myIntent);
 												
 										   }
 								    }else{
@@ -292,8 +297,13 @@ public class Whoispaying extends ActionBarActivity {
 			                	    editor.putInt("no_of_payers", 0);
 			                	    editor.putInt("table_no",tableno);
 			                	    editor.commit();
-			                		Intent myIntent = new Intent(Whoispaying.this, WhoHadTheLobster.class);
-			                		startActivity( myIntent);
+			                	    Bundle extrabundle = new Bundle();				
+		            				extrabundle.putBoolean("review", false);
+		            				Bundle bundle =new Bundle();
+		            				bundle.putBundle("databundle", extrabundle);
+	                	    	   Intent myIntent = new Intent(Whoispaying.this, WhoHadTheLobster.class);
+	                	    	   myIntent.putExtras(bundle);
+	                		       startActivity( myIntent);
 							   }
 					    }else{
 					    	showNoOfPersonDailogBox(2);
@@ -358,7 +368,12 @@ public class Whoispaying extends ActionBarActivity {
 	                		       Intent myIntent = new Intent(Whoispaying.this, LetsGoDutchScreen.class);
 	                		       startActivity( myIntent);
 	                	    }else{
+		                	    	Bundle extrabundle = new Bundle();				
+		            				extrabundle.putBoolean("review", false);
+		            				Bundle bundle =new Bundle();
+		            				bundle.putBundle("databundle", extrabundle);
 	                	    	   Intent myIntent = new Intent(Whoispaying.this, WhoHadTheLobster.class);
+	                	    	   myIntent.putExtras(bundle);
 	                		       startActivity( myIntent);
 	                	    }
                 		

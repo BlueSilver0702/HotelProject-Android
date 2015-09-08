@@ -69,7 +69,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
         android:layout_below="@+id/et_mp_roundupto_cash_payment_screen"
-        android:text="HOW MUCH YOU ARE"
+        android:text="HOW MUCH ARE YOU"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textColor="#FFFFFF" />
 
